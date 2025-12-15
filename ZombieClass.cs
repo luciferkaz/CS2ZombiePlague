@@ -8,8 +8,8 @@ namespace CS2ZombiePlague
 {
     abstract public class ZombieClass
     {
-        public abstract string DisplayName { get; set; }
-        public abstract string IternalName { get; set; }
+        public abstract string DisplayName { get; }
+        public abstract string IternalName { get; }
         public abstract int Health {  get; set; }
         public abstract float Speed { get; set; }
         public abstract float  Gravity { get; set; }
