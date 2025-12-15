@@ -10,6 +10,7 @@ namespace CS2ZombiePlague
 
         public override void Load(bool hotReload)
         {
+            Console.WriteLine("dsds");
         }
     }
 }
