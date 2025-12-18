@@ -1,7 +1,4 @@
-﻿using CounterStrikeSharp.API;
-using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Events;
-using CounterStrikeSharp.API.Modules.Utils;
+﻿using CounterStrikeSharp.API.Core;
 
 namespace CS2ZombiePlague
 {
@@ -14,6 +11,5 @@ namespace CS2ZombiePlague
         {
 
         }
-
     }
 }
