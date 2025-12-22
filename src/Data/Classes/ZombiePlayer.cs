@@ -1,0 +1,41 @@
+﻿using CS2ZombiePlague.src.Data.Abilities;
+using CS2ZombiePlague.src.Data.Extensions;
+using SwiftlyS2.Shared.Players;
+
+namespace CS2ZombiePlague.src.Data.Classes
+{
+    public class ZombiePlayer
+    {
+        private readonly IZombieClass _zombieClass;
+        private readonly IPlayer _player;
+
+        public ZombiePlayer(IZombieClass zombieClass, IPlayer player)
+        {
+            _zombieClass = zombieClass;
+            _player = player;
+
+            ApplyZombieState();
+        }
+
+        public void ApplyZombieState()
+        {
+            if (_player.PlayerPawn == null)
+                return;
+
+            _player.SetHealth(_zombieClass.Health);
+            _player.SetSpeed(_zombieClass.Speed);
+            _player.SetGravity(_zombieClass.Gravity);
+
+            var itemServices = _player.PlayerPawn?.ItemServices;
+            if (itemServices != null)
+            {
+                itemServices.RemoveItems();
+                itemServices.GiveItem("weapon_knife");
+            }
+        }
+
+        public IZombieClass GetZombieClass() { return _zombieClass; }
+        public IPlayer GetPlayer() { return _player; }
+    }
+
+}
