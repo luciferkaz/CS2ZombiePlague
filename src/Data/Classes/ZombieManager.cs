@@ -1,5 +1,8 @@
 ﻿using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Players;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace CS2ZombiePlague.src.Data.Classes
 {
