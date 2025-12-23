@@ -29,10 +29,10 @@
 
   <ItemGroup>
     <Compile Remove="examples\**\*.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="src\Data\Utilities\" />
+    <Compile Remove="src\Data\Utilities\**" />
+    <Content Remove="src\Data\Utilities\**" />
+    <EmbeddedResource Remove="src\Data\Utilities\**" />
+    <None Remove="src\Data\Utilities\**" />
   </ItemGroup>
 
   <Target Name="CreateZip" AfterTargets="Publish">

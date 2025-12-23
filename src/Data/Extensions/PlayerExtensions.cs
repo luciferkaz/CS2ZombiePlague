@@ -1,10 +1,4 @@
-﻿using CS2ZombiePlague.src.Data.Classes;
-using SwiftlyS2.Shared.Players;
-using SwiftlyS2.Shared.SchemaDefinitions;
-using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
+﻿using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.src.Data.Extensions
 {
