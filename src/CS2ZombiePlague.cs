@@ -1,7 +1,6 @@
 using CS2ZombiePlague.src.Data.Classes;
 using CS2ZombiePlague.src.Data.Extensions;
 using CS2ZombiePlague.src.Data.Roundes;
-using CS2ZombiePlague.src.Data.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Events;
