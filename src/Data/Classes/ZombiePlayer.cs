@@ -26,6 +26,7 @@ namespace CS2ZombiePlague.src.Data.Classes
             _player.SetHealth(_zombieClass.Health);
             _player.SetSpeed(_zombieClass.Speed);
             _player.SetGravity(_zombieClass.Gravity);
+            _player.SetModel("characters/models/tm_phoenix/tm_phoenix.vmdl");
 
             var itemServices = _player.PlayerPawn?.ItemServices;
             if (itemServices != null)

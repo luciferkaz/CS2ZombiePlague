@@ -1,6 +1,4 @@
-﻿using CS2ZombiePlague.src.Data.Abilities;
-
-namespace CS2ZombiePlague.src.Data.Classes
+﻿namespace CS2ZombiePlague.src.Data.Classes
 {
     public interface IZombieClass
     {

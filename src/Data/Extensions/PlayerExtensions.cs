@@ -1,4 +1,5 @@
-﻿using SwiftlyS2.Shared.Players;
+﻿using CS2ZombiePlague.src.Data.Classes;
+using SwiftlyS2.Shared.Players;
 using SwiftlyS2.Shared.SchemaDefinitions;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace CS2ZombiePlague.src.Data.Extensions
         public static void SetArmor(this IPlayer player, int armor)
         {
             var playerPawn = player.PlayerPawn;
-            if (playerPawn == null || player.Controller.PawnIsAlive) return;
+            if (playerPawn == null || !player.Controller.PawnIsAlive) return;
 
             playerPawn.ArmorValue = armor;
             playerPawn.ArmorValueUpdated();
@@ -30,7 +31,7 @@ namespace CS2ZombiePlague.src.Data.Extensions
         public static void SetSpeed(this IPlayer player, float speed)
         {
             var playerPawn = player.PlayerPawn;
-            if (playerPawn == null || player.Controller.PawnIsAlive) return;
+            if (playerPawn == null || !player.Controller.PawnIsAlive) return;
 
             playerPawn.VelocityModifier = speed / 250;
             playerPawn.VelocityModifierUpdated();
@@ -39,7 +40,7 @@ namespace CS2ZombiePlague.src.Data.Extensions
         public static void SetGravity(this IPlayer player, float gravity)
         {
             var pawn = player.Pawn;
-            if (pawn == null || player.Controller.PawnIsAlive) return;
+            if (pawn == null || !player.Controller.PawnIsAlive) return;
 
             pawn.GravityScale = gravity / 800;
             pawn.ActualGravityScale = gravity / 800;
@@ -49,9 +50,15 @@ namespace CS2ZombiePlague.src.Data.Extensions
         public static void SetModel(this IPlayer player, string modelPath)
         {
             var pawn = player.Pawn;
-            if (pawn == null || player.Controller.PawnIsAlive) return;
+            if (pawn == null || !player.Controller.PawnIsAlive) return;
 
             pawn.SetModel(modelPath);
+        }
+
+        public static bool IsInfected(this IPlayer player)
+        {
+            var allZombies = CS2ZombiePlague.ZombieManager.GetAllZombies();
+            return allZombies.ContainsKey(player.PlayerID);
         }
     }
 }

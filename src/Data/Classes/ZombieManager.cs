@@ -1,33 +1,30 @@
 ﻿using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Players;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CS2ZombiePlague.src.Data.Classes
 {
     public class ZombieManager(ISwiftlyCore _core)
     {
-        private Dictionary<int, ZombiePlayer> ZombiePlayers = new()!;
+        private Dictionary<int, ZombiePlayer> _zombiePlayers = new()!;
 
         public ZombiePlayer CreateZombie(IPlayer player)
         {
-            return ZombiePlayers[player.PlayerID] = new ZombiePlayer(new ZombieHeavy(), player);
+            return _zombiePlayers[player.PlayerID] = new ZombiePlayer(new ZombieHunter(), player);
         }
 
         public void Remove(IPlayer player)
         {
-            ZombiePlayers.Remove(player.PlayerID);
+            _zombiePlayers.Remove(player.PlayerID);
         }
 
         public void RemoveAll()
         {
-            ZombiePlayers.Clear();
+            _zombiePlayers.Clear();
         }
 
-        public bool IsInfected(IPlayer player)
+        public Dictionary<int, ZombiePlayer> GetAllZombies()
         {
-            return ZombiePlayers.ContainsKey(player.PlayerID);
+            return _zombiePlayers;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using CS2ZombiePlague.src.Data.Abilities;
-using SwiftlyS2.Shared.Players;
+﻿using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.src.Data.Classes
 {

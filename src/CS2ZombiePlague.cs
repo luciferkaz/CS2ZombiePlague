@@ -1,11 +1,14 @@
 using CS2ZombiePlague.src.Data.Classes;
+using CS2ZombiePlague.src.Data.Extensions;
 using CS2ZombiePlague.src.Data.Roundes;
+using CS2ZombiePlague.src.Data.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Events;
 using SwiftlyS2.Shared.GameEventDefinitions;
 using SwiftlyS2.Shared.Misc;
 using SwiftlyS2.Shared.Plugins;
+using SwiftlyS2.Shared.SchemaDefinitions;
 
 namespace CS2ZombiePlague
 {
@@ -50,6 +53,8 @@ namespace CS2ZombiePlague
 
             Core.GameEvent.HookPost<EventRoundStart>(OnRoundStart);
             Core.GameEvent.HookPost<EventRoundEnd>(OnRoundEnd);
+            Core.GameEvent.HookPost<EventPlayerHurt>(OnPlayerHurt);
+
         }
 
         private void RegisterRounds()
@@ -80,6 +85,19 @@ namespace CS2ZombiePlague
                 RoundManager.GetRound().End();
             }
 
+            return HookResult.Continue;
+        }
+
+        public HookResult OnPlayerHurt(EventPlayerHurt @event)
+        {
+            var infector = Core.PlayerManager.GetPlayer(@event.Attacker);
+            var victim = @event.Accessor.GetPlayer("userid");
+            if (infector == null || victim == null) { return HookResult.Continue; }
+
+            if (infector.IsInfected() && !victim.IsInfected())
+            {
+                ZombieManager.CreateZombie(victim);
+            }
             return HookResult.Continue;
         }
 
