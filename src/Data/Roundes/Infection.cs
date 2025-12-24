@@ -1,6 +1,5 @@
-﻿using CS2ZombiePlague.src.Data.Extensions;
+using CS2ZombiePlague.src.Data.Extensions;
 using SwiftlyS2.Shared;
-using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.src.Data.Roundes
 {

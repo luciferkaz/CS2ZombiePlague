@@ -1,4 +1,4 @@
-﻿using CS2ZombiePlague.src.Data.Roundes;
+using CS2ZombiePlague.src.Data.Roundes;
 using SwiftlyS2.Shared;
 
 namespace CS2ZombiePlague.src.Data.Managers
