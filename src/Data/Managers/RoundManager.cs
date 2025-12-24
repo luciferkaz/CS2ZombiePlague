@@ -1,6 +1,7 @@
-﻿using SwiftlyS2.Shared;
+﻿using CS2ZombiePlague.src.Data.Roundes;
+using SwiftlyS2.Shared;
 
-namespace CS2ZombiePlague.src.Data.Roundes
+namespace CS2ZombiePlague.src.Data.Managers
 {
     public class RoundManager(ISwiftlyCore _core)
     {

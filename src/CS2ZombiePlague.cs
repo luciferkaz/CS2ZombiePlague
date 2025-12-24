@@ -1,5 +1,5 @@
-using CS2ZombiePlague.src.Data.Classes;
 using CS2ZombiePlague.src.Data.Extensions;
+using CS2ZombiePlague.src.Data.Managers;
 using CS2ZombiePlague.src.Data.Roundes;
 using Microsoft.Extensions.DependencyInjection;
 using SwiftlyS2.Shared;
@@ -17,6 +17,7 @@ namespace CS2ZombiePlague
         private ServiceProvider? _provider;
 
         public static ZombieManager ZombieManager = null!;
+        public static HumanManager HumanManager = null!;
         public static RoundManager RoundManager = null!;
         public CS2ZombiePlague(ISwiftlyCore core) : base(core)
         {
@@ -41,12 +42,14 @@ namespace CS2ZombiePlague
             services
               .AddSwiftly(Core)
               .AddSingleton<ZombieManager>()
-              .AddSingleton<RoundManager>();
+              .AddSingleton<RoundManager>()
+              .AddSingleton<HumanManager>();
 
             _provider = services.BuildServiceProvider();
 
             ZombieManager = _provider.GetRequiredService<ZombieManager>();
             RoundManager = _provider.GetRequiredService<RoundManager>();
+            HumanManager = _provider.GetRequiredService<HumanManager>();
 
             RegisterRounds();
 
@@ -89,13 +92,16 @@ namespace CS2ZombiePlague
 
         public HookResult OnPlayerHurt(EventPlayerHurt @event)
         {
-            var infector = Core.PlayerManager.GetPlayer(@event.Attacker);
+            var attacker = Core.PlayerManager.GetPlayer(@event.Attacker);
             var victim = @event.Accessor.GetPlayer("userid");
-            if (infector == null || victim == null) { return HookResult.Continue; }
 
-            if (infector.IsInfected() && !victim.IsInfected())
+            if (attacker == null || victim == null) { return HookResult.Continue; }
+
+            if (attacker.IsInfected())
             {
-                ZombieManager.CreateZombie(victim);
+                var zombie = ZombieManager.GetZombie(attacker.PlayerID);
+                zombie.InfectTarget(victim);
+                @event.DmgHealth = 0;
             }
             return HookResult.Continue;
         }

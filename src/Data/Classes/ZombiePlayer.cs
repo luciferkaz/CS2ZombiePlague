@@ -7,11 +7,13 @@ namespace CS2ZombiePlague.src.Data.Classes
     {
         private readonly IZombieClass _zombieClass;
         private readonly IPlayer _player;
+        private readonly InfectionController infectionController;
 
         public ZombiePlayer(IZombieClass zombieClass, IPlayer player)
         {
             _zombieClass = zombieClass;
             _player = player;
+            infectionController = new InfectionController();
 
             ApplyZombieState();
         }
@@ -34,6 +36,13 @@ namespace CS2ZombiePlague.src.Data.Classes
                 itemServices.RemoveItems();
                 itemServices.GiveItem("weapon_knife");
             }
+
+            _player.SwitchTeam(Team.T);
+        }
+
+        public void InfectTarget(IPlayer target)
+        {
+            infectionController.TryInfectTarget(target);
         }
 
         public IZombieClass GetZombieClass() { return _zombieClass; }

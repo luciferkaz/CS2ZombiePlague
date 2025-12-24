@@ -1,4 +1,6 @@
-﻿using SwiftlyS2.Shared;
+﻿using CS2ZombiePlague.src.Data.Extensions;
+using SwiftlyS2.Shared;
+using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.src.Data.Roundes
 {
@@ -19,10 +21,19 @@ namespace CS2ZombiePlague.src.Data.Roundes
         public void Start()
         {
             var players = _core.PlayerManager.GetAllPlayers().Shuffle();
-            var randomPlayer = players.First();
-            CS2ZombiePlague.ZombieManager.CreateZombie(randomPlayer);
+            var firstZombie = players.First();
 
-            _core.PlayerManager.SendCenter("Первый заражённый => +" + randomPlayer.Controller.PlayerName);
+            CS2ZombiePlague.ZombieManager.CreateZombie(firstZombie);
+
+            foreach (var player in players)
+            {
+                if(!player.IsInfected())
+                {
+                    player.SwitchTeam(Team.CT);
+                }
+            }
+
+            _core.PlayerManager.SendCenter("Первый заражённый => +" + firstZombie.Controller.PlayerName);
         }
     }
 }

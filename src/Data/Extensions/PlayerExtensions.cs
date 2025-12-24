@@ -1,5 +1,6 @@
 ﻿using CS2ZombiePlague.src.Data.Classes;
 using SwiftlyS2.Shared.Players;
+using SwiftlyS2.Shared.ProtobufDefinitions;
 using SwiftlyS2.Shared.SchemaDefinitions;
 using System;
 using System.Collections.Generic;
@@ -59,6 +60,11 @@ namespace CS2ZombiePlague.src.Data.Extensions
         {
             var allZombies = CS2ZombiePlague.ZombieManager.GetAllZombies();
             return allZombies.ContainsKey(player.PlayerID);
+        }
+
+        public static bool IsLastHuman(this IPlayer player)
+        {
+            return !player.IsInfected() && CS2ZombiePlague.HumanManager.GetCountHumans() == 1;
         }
     }
 }
