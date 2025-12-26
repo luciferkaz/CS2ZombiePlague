@@ -4,7 +4,7 @@
     {
         public string InternalName => "zombie_heavy";
         public string DisplayName => "Zombie Heavy";
-        public string ZombieModel => "characters/players/zombie_models/zombie_heavy/zombie_heavy.vmdl";
+        public string ZombieModel => "characters/models/tm_phoenix/tm_phoenix.vmdl";
         public string Description => "";
         public int Health => 4000;
         public float Speed => 240.0f;

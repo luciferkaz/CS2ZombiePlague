@@ -1,37 +1,42 @@
-using CS2ZombiePlague.src.Data.Roundes;
+using CS2ZombiePlague.Data.Rounds;
 using SwiftlyS2.Shared;
 
-namespace CS2ZombiePlague.src.Data.Managers
+namespace CS2ZombiePlague.Data.Managers
 {
     public class RoundManager(ISwiftlyCore _core)
     {
-        private readonly List<IRound> _rounds = new();
+        private readonly Dictionary<RoundType, IRound> _rounds = new();
         private IRound? _currentRound;
 
-        private CancellationTokenSource? token = null;
+        private CancellationTokenSource? _token = null;
         private const int RoundStartTime = 10;
 
-        public void Register(IRound round)
+        private readonly Random _randomizer = new();
+
+        public void Register(IRound round, RoundType roundType)
         {
-            _rounds.Add(round);
-            _currentRound = null;
+            _rounds.Add(roundType, round);
         }
 
-        public void SelectRound(int round)
+        public void SelectRound(RoundType roundType)
         {
-            _currentRound = _rounds[round];
-            int localTime = 0;
-            token = _core.Scheduler.RepeatBySeconds(1, () => {
-                if(_currentRound == null) { token?.Cancel(); }
+            _currentRound = _rounds[roundType];
+        }
 
-                localTime += 1;
-                _core.PlayerManager.SendCenter("До заражения " + (RoundStartTime-localTime) + " секунд");
-                if (_currentRound != null && localTime == RoundStartTime)
-                {
-                    _currentRound.Start();
-                    token?.Cancel();
-                }
-            });
+        public void SelectRound()
+        {
+            _currentRound = null;
+        }
+        
+        public IRound? GetRound()
+        {
+            return _currentRound;
+        }
+        
+        private RoundType RandomRound()
+        {
+            var roundTypes = Enum.GetValues<RoundType>();
+            return roundTypes[_randomizer.Next(1, roundTypes.Length - 1)];
         }
 
         public bool GameIsAvailable()
@@ -41,12 +46,29 @@ namespace CS2ZombiePlague.src.Data.Managers
             {
                 return true;
             }
+
             return false;
         }
 
-        public IRound GetRound()
+        public void Start()
         {
-            return _currentRound;
+            int localTime = 0;
+            _token = _core.Scheduler.RepeatBySeconds(1, () =>
+            {
+                localTime += 1;
+                _core.PlayerManager.SendCenter("До заражения " + (RoundStartTime - localTime) + " секунд");
+
+                if (localTime == RoundStartTime)
+                {
+                    if (_currentRound == null)
+                    {
+                        SelectRound(RandomRound());
+                    }
+
+                    _currentRound!.Start();
+                    _token?.Cancel();
+                }
+            });
         }
     }
 }

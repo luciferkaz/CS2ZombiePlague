@@ -1,5 +1,6 @@
 ﻿using CS2ZombiePlague.src.Data.Extensions;
 using SwiftlyS2.Shared.Players;
+using SwiftlyS2.Shared.SchemaDefinitions;
 
 namespace CS2ZombiePlague.src.Data.Classes
 {
@@ -9,26 +10,30 @@ namespace CS2ZombiePlague.src.Data.Classes
         private readonly IPlayer _player;
         private readonly InfectionController infectionController;
 
-        public ZombiePlayer(IZombieClass zombieClass, IPlayer player)
+        public bool IsNemesis { get; }
+
+        public ZombiePlayer(IZombieClass zombieClass, IPlayer player, bool isNemesis = false)
         {
             _zombieClass = zombieClass;
             _player = player;
             infectionController = new InfectionController();
 
-            ApplyZombieState();
+            IsNemesis = isNemesis;
+
+            Initialize();
         }
 
-        public void ApplyZombieState()
+        private void Initialize()
         {
             if (_player.PlayerPawn == null)
             {
-                return; 
+                return;
             }
 
             _player.SetHealth(_zombieClass.Health);
             _player.SetSpeed(_zombieClass.Speed);
             _player.SetGravity(_zombieClass.Gravity);
-            _player.SetModel("characters/models/tm_phoenix/tm_phoenix.vmdl");
+            _player.SetModel(_zombieClass.ZombieModel);
 
             var itemServices = _player.PlayerPawn?.ItemServices;
             if (itemServices != null)
@@ -40,11 +45,14 @@ namespace CS2ZombiePlague.src.Data.Classes
             _player.SwitchTeam(Team.T);
         }
 
-        public void InfectTarget(IPlayer target)
+        public void Infect(IPlayer target)
         {
-            infectionController.TryInfectTarget(target);
+            infectionController.TryInfect(target);
         }
 
-        public IZombieClass GetZombieClass() { return _zombieClass; }
+        public IZombieClass GetZombieClass()
+        {
+            return _zombieClass;
+        }
     }
 }

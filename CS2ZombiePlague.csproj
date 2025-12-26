@@ -35,6 +35,10 @@
     <None Remove="src\Data\Utilities\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="src\Data\Roundes\" />
+  </ItemGroup>
+
   <Target Name="CreateZip" AfterTargets="Publish">
     <ItemGroup>
       <PublishFiles Include="$(PublishDir)**\*.*" />
