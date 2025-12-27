@@ -9,45 +9,29 @@ namespace CS2ZombiePlague.Data.Managers
         private IRound? _currentRound;
 
         private CancellationTokenSource? _token = null;
-        private const int RoundStartTime = 10;
+        private const int ROUND_START_TIME = 10;
 
         private readonly Random _randomizer = new();
 
-        public void Register(IRound round, RoundType roundType)
+        public void Register(RoundType roundType, IRound round)
         {
             _rounds.Add(roundType, round);
         }
 
-        public void SelectRound(RoundType roundType)
+        public void SetRound(RoundType roundType)
         {
             _currentRound = _rounds[roundType];
-        }
-
-        public void SelectRound()
-        {
-            _currentRound = null;
         }
         
         public IRound? GetRound()
         {
             return _currentRound;
         }
-        
-        private RoundType RandomRound()
-        {
-            var roundTypes = Enum.GetValues<RoundType>();
-            return roundTypes[_randomizer.Next(1, roundTypes.Length - 1)];
-        }
 
-        public bool GameIsAvailable()
+        public bool RoundIsAvailable()
         {
             var players = _core.PlayerManager.GetAllPlayers();
-            if (players.Count() > 1)
-            {
-                return true;
-            }
-
-            return false;
+            return players.Count() > 1;
         }
 
         public void Start()
@@ -56,19 +40,25 @@ namespace CS2ZombiePlague.Data.Managers
             _token = _core.Scheduler.RepeatBySeconds(1, () =>
             {
                 localTime += 1;
-                _core.PlayerManager.SendCenter("До заражения " + (RoundStartTime - localTime) + " секунд");
+                _core.PlayerManager.SendCenter("До заражения " + (ROUND_START_TIME - localTime) + " секунд");
 
-                if (localTime == RoundStartTime)
+                if (localTime == ROUND_START_TIME)
                 {
-                    if (_currentRound == null)
+                    if (_currentRound == _rounds[RoundType.None])
                     {
-                        SelectRound(RandomRound());
+                        SetRound(RandomRound());
                     }
 
                     _currentRound!.Start();
                     _token?.Cancel();
                 }
             });
+        }
+        
+        private RoundType RandomRound()
+        {
+            var roundTypes = Enum.GetValues<RoundType>();
+            return roundTypes[_randomizer.Next(1, roundTypes.Length - 1)];
         }
     }
 }

@@ -5,15 +5,17 @@ namespace CS2ZombiePlague.src.Data.Classes
 {
     public class InfectionController
     {
-        public void TryInfect(IPlayer target)
+        public bool TryInfect(IPlayer target)
         {
             if (target != null && !target.IsInfected() && !target.IsLastHuman())
             {
-                InfectPlayer(target);
+                Infect(target);
+                return true;
             }
+            return false;
         }
 
-        private void InfectPlayer(IPlayer target)
+        private void Infect(IPlayer target)
         {
             CS2ZombiePlague.ZombieManager.CreateZombie(target);
         }

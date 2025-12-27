@@ -6,19 +6,13 @@ using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.Data.Rounds
 {
-    public class Infection : IRound
+    public class Infection(ISwiftlyCore _core) : IRound
     {
-        private ISwiftlyCore _core;
-
-        public Infection(ISwiftlyCore core)
-        {
-            _core = core;
-        }
 
         public void End()
         {
             _core.Event.OnEntityTakeDamage -= TakeDamage;
-            CS2ZombiePlague.RoundManager.SelectRound();
+            CS2ZombiePlague.RoundManager.SetRound(RoundType.None);
 
             _core.PlayerManager.SendCenter("Раунд окончен");
         }
@@ -27,8 +21,8 @@ namespace CS2ZombiePlague.Data.Rounds
         {
             _core.Event.OnEntityTakeDamage += TakeDamage;
 
-            var players = _core.PlayerManager.GetAllPlayers().Shuffle();
-            var firstZombie = players.First();
+            var players = _core.PlayerManager.GetAllPlayers().ToList();
+            var firstZombie = players[Random.Shared.Next(0, players.Count)];
 
             CS2ZombiePlague.ZombieManager.CreateZombie(firstZombie);
 

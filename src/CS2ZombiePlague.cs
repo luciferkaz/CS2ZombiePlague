@@ -67,7 +67,8 @@ namespace CS2ZombiePlague
 
         private void RegisterRounds()
         {
-            RoundManager.Register(new Infection(Core), RoundType.Infection);
+            RoundManager.Register(RoundType.None, new None());
+            RoundManager.Register(RoundType.Infection, new Infection(Core));
         }
 
         public override void Unload()
@@ -77,8 +78,9 @@ namespace CS2ZombiePlague
         public HookResult OnRoundStart(EventRoundStart @event)
         {
             ZombieManager.RemoveAll();
+            RoundManager.SetRound(RoundType.None);
 
-            if (RoundManager.GameIsAvailable())
+            if (RoundManager.RoundIsAvailable())
             {
                 RoundManager.Start();
             }
