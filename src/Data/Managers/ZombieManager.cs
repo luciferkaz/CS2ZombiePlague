@@ -1,16 +1,31 @@
-﻿using CS2ZombiePlague.src.Data.Classes;
+﻿using CS2ZombiePlague.Data.Classes;
+using CS2ZombiePlague.Data.Rounds;
+using CS2ZombiePlague.src.Data.Classes;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.Data.Managers
 {
-    public class ZombieManager(ISwiftlyCore _core)
+    public class ZombieManager
     {
         private Dictionary<int, ZombiePlayer> _zombiePlayers = new()!;
 
-        public ZombiePlayer CreateZombie(IPlayer player)
+        public ZombiePlayer? CreateZombie(IPlayer player)
         {
-            return _zombiePlayers[player.PlayerID] = new ZombiePlayer(new ZombieHunter(), player);
+            if (player != null && player.IsValid)
+            {
+                return _zombiePlayers[player.PlayerID] = new ZombiePlayer(new ZombieHunter(), player);
+            }
+            return null;
+        }
+        
+        public ZombiePlayer? CreateNemesis(IPlayer player)
+        {
+            if (player != null && player.IsValid)
+            {
+                return _zombiePlayers[player.PlayerID] = new ZombiePlayer(new ZombieNemesis(), player);
+            }
+            return null;
         }
 
         public void Remove(IPlayer player)

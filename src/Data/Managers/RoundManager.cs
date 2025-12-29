@@ -34,6 +34,11 @@ namespace CS2ZombiePlague.Data.Managers
             return players.Count() > 1;
         }
 
+        public bool IsNoneRound()
+        {
+            return _currentRound == _rounds[RoundType.None];
+        }
+
         public void Start()
         {
             int localTime = 0;
@@ -42,7 +47,7 @@ namespace CS2ZombiePlague.Data.Managers
                 localTime += 1;
                 _core.PlayerManager.SendCenter("До заражения " + (ROUND_START_TIME - localTime) + " секунд");
 
-                if (localTime == ROUND_START_TIME)
+                if (localTime >= ROUND_START_TIME)
                 {
                     if (_currentRound == _rounds[RoundType.None])
                     {
@@ -58,7 +63,7 @@ namespace CS2ZombiePlague.Data.Managers
         private RoundType RandomRound()
         {
             var roundTypes = Enum.GetValues<RoundType>();
-            return roundTypes[_randomizer.Next(1, roundTypes.Length - 1)];
+            return roundTypes[_randomizer.Next(1, roundTypes.Length)];
         }
     }
 }

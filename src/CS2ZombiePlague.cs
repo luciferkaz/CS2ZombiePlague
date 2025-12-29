@@ -1,3 +1,4 @@
+using CS2ZombiePlague.Data;
 using CS2ZombiePlague.Data.Managers;
 using CS2ZombiePlague.src.Data.Extensions;
 using CS2ZombiePlague.src.Data.Managers;
@@ -7,7 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Events;
 using SwiftlyS2.Shared.GameEventDefinitions;
+using SwiftlyS2.Shared.GameEvents;
 using SwiftlyS2.Shared.Misc;
+using SwiftlyS2.Shared.Natives;
 using SwiftlyS2.Shared.Players;
 using SwiftlyS2.Shared.Plugins;
 
@@ -23,6 +26,7 @@ namespace CS2ZombiePlague
         public static RoundManager RoundManager = null!;
         public static HumanManager HumanManager = null!;
         public static Utils Utils = null!;
+        public static Knockback Knockback = null!;
 
         public CS2ZombiePlague(ISwiftlyCore core) : base(core)
         {
@@ -49,6 +53,7 @@ namespace CS2ZombiePlague
                 .AddSingleton<ZombieManager>()
                 .AddSingleton<RoundManager>()
                 .AddSingleton<HumanManager>()
+                .AddSingleton<Knockback>()
                 .AddSingleton<Utils>();
 
             _provider = services.BuildServiceProvider();
@@ -57,18 +62,21 @@ namespace CS2ZombiePlague
             RoundManager = _provider.GetRequiredService<RoundManager>();
             HumanManager = _provider.GetRequiredService<HumanManager>();
             Utils = _provider.GetRequiredService<Utils>();
+            Knockback = _provider.GetRequiredService<Knockback>();
 
             RegisterRounds();
-
+            Knockback.Start();
+            
             Core.GameEvent.HookPost<EventRoundStart>(OnRoundStart);
             Core.GameEvent.HookPost<EventRoundEnd>(OnRoundEnd);
-            Core.GameEvent.HookPre<EventPlayerHurt>(OnPlayerHurt);
+            
         }
 
         private void RegisterRounds()
         {
             RoundManager.Register(RoundType.None, new None());
             RoundManager.Register(RoundType.Infection, new Infection(Core));
+            RoundManager.Register(RoundType.Nemesis, new Nemesis(Core));
         }
 
         public override void Unload()
@@ -88,13 +96,18 @@ namespace CS2ZombiePlague
             return HookResult.Continue;
         }
         
+        [GameEventHandler(HookMode.Pre)]
         public HookResult OnPlayerHurt(EventPlayerHurt @event)
         {
-            if (RoundManager.GetRound() == null)
+            var victim = Core.PlayerManager.GetPlayer(@event.UserId);
+            if (victim == null)
             {
-                IPlayer victimPlayer = @event.UserIdPlayer;
-                if(victimPlayer.IsValid)
-                    victimPlayer.SetHealth(victimPlayer.Pawn.Health+@event.DmgHealth);
+                return HookResult.Continue;
+            }
+            
+            if (RoundManager.IsNoneRound())
+            {
+                victim.PlayerPawn?.Health = victim.PlayerPawn.Health + @event.DmgHealth;
             }
 
             return HookResult.Continue;
@@ -104,12 +117,12 @@ namespace CS2ZombiePlague
         {
             if (RoundManager.GetRound() != null)
             {
-                RoundManager.GetRound().End();
+                RoundManager.GetRound()?.End();
             }
             
             return HookResult.Continue;
         }
-
+        
         [EventListener<EventDelegates.OnWeaponServicesCanUseHook>]
         public void OnItemServicesCanAcquireHook(IOnWeaponServicesCanUseHookEvent @event)
         {

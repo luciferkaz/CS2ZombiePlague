@@ -60,6 +60,17 @@ namespace CS2ZombiePlague.src.Data.Extensions
             return allZombies.ContainsKey(player.PlayerID);
         }
         
+        public static bool IsNemesis(this IPlayer player)
+        {
+            if (player.IsInfected())
+            {
+                var zombie = CS2ZombiePlague.ZombieManager.GetZombie(player.PlayerID);
+                return zombie.IsNemesis;
+            }
+
+            return false; 
+        }
+        
         public static bool IsLastHuman(this IPlayer player)
         {
             return !player.IsInfected() && CS2ZombiePlague.HumanManager.GetCountHumans() == 1;

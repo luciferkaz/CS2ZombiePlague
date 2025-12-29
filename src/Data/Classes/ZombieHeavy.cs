@@ -1,14 +1,20 @@
-﻿namespace CS2ZombiePlague.src.Data.Classes
+﻿using CS2ZombiePlague.src.Data.Classes;
+using SwiftlyS2.Shared.Players;
+
+namespace CS2ZombiePlague.Data.Classes;
+
+public class ZombieHeavy : ZombieClass
 {
-    public class ZombieHeavy : IZombieClass
+    public override string InternalName => "zombie_heavy";
+    public override string DisplayName => "Zombie Heavy";
+    public override string ZombieModel => "characters/models/tm_phoenix/tm_phoenix.vmdl";
+    public override string Description => "";
+    public override int Health => 4000;
+    public override float Speed => 240.0f;
+    public override float Knockback => 0.3f;
+    public override int Gravity => 900;
+    public override void Initialize(IPlayer player, ZombieController zombieController)
     {
-        public string InternalName => "zombie_heavy";
-        public string DisplayName => "Zombie Heavy";
-        public string ZombieModel => "characters/models/tm_phoenix/tm_phoenix.vmdl";
-        public string Description => "";
-        public int Health => 4000;
-        public float Speed => 240.0f;
-        public float Knockback => 1.0f;
-        public int Gravity => 900;
+        zombieController.ApplyState(player);
     }
 }

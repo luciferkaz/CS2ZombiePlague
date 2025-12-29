@@ -3,6 +3,7 @@
     public enum RoundType
     {
         None = 0,
-        Infection = 1
+        Infection = 1,
+        Nemesis = 2
     }
 }
