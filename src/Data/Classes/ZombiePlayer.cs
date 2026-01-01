@@ -14,18 +14,19 @@ public class ZombiePlayer
         _player = player;
         IsNemesis = isNemesis;
         zombieController = new ZombieController(zombieClass);
-            
-        zombieClass.Initialize(_player,  zombieController);
+
+        zombieClass.Initialize(_player, zombieController);
         player.SendAlert("Ваш класс => " + zombieClass.DisplayName);
     }
 
     public bool Infect(IPlayer target)
     {
-        if (target != null && !target.IsInfected() && !target.IsLastHuman())
+        if (target != null && !target.IsInfected() && !target.IsLastHuman() && target.PlayerPawn.ArmorValue == 0)
         {
             zombieController.Infect(target);
             return true;
         }
+
         return false;
     }
 

@@ -19,8 +19,16 @@ namespace CS2ZombiePlague.src.Data.Extensions
         {
             var playerPawn = player.PlayerPawn;
             if (playerPawn == null || !player.Controller.PawnIsAlive) return;
-
-            playerPawn.ArmorValue = armor;
+            
+            if (armor <= 0)
+            {
+                playerPawn.ArmorValue = 0;
+            }
+            else
+            {
+                playerPawn.ArmorValue = armor;
+            }
+            
             playerPawn.ArmorValueUpdated();
         }
 
@@ -51,6 +59,7 @@ namespace CS2ZombiePlague.src.Data.Extensions
             if (pawn == null || !player.Controller.PawnIsAlive) return;
 
             pawn.SetModel(modelPath);
+            pawn.CBodyComponentUpdated();
         }
 
         public static bool IsInfected(this IPlayer player)

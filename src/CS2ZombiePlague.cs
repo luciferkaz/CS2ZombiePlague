@@ -65,16 +65,16 @@ namespace CS2ZombiePlague
 
             RegisterRounds();
             Knockback.Start();
-            
+
             Core.GameEvent.HookPost<EventRoundStart>(OnRoundStart);
             Core.GameEvent.HookPost<EventRoundEnd>(OnRoundEnd);
-            
         }
 
         private void RegisterRounds()
         {
             RoundManager.Register(RoundType.None, new None());
             RoundManager.Register(RoundType.Infection, new Infection(Core));
+            RoundManager.Register(RoundType.Plague, new Plague(Core));
             RoundManager.Register(RoundType.Nemesis, new Nemesis(Core));
         }
 
@@ -82,9 +82,13 @@ namespace CS2ZombiePlague
         {
         }
 
-        public HookResult OnRoundStart(EventRoundStart @event)
+        private HookResult OnRoundStart(EventRoundStart @event)
         {
             ZombieManager.RemoveAll();
+            RoundManager.CancelToken();
+            Utils.SortTeam();
+            HumanManager.SetHumanModelAll();
+
             RoundManager.SetRound(RoundType.None);
 
             if (RoundManager.RoundIsAvailable())
@@ -94,36 +98,36 @@ namespace CS2ZombiePlague
 
             return HookResult.Continue;
         }
-        
+
         [GameEventHandler(HookMode.Pre)]
-        public HookResult OnPlayerHurt(EventPlayerHurt @event)
+        private HookResult OnPlayerHurt(EventPlayerHurt @event)
         {
             var victim = Core.PlayerManager.GetPlayer(@event.UserId);
             if (victim == null)
             {
                 return HookResult.Continue;
             }
-            
+
             if (RoundManager.IsNoneRound())
             {
-                victim.PlayerPawn?.Health = victim.PlayerPawn.Health + @event.DmgHealth;
+                victim.SetHealth(victim.PlayerPawn.Health + @event.DmgHealth);
             }
 
             return HookResult.Continue;
         }
 
-        public HookResult OnRoundEnd(EventRoundEnd @event)
+        private HookResult OnRoundEnd(EventRoundEnd @event)
         {
             if (RoundManager.GetRound() != null)
             {
                 RoundManager.GetRound()?.End();
             }
-            
+
             return HookResult.Continue;
         }
-        
+
         [EventListener<EventDelegates.OnWeaponServicesCanUseHook>]
-        public void OnItemServicesCanAcquireHook(IOnWeaponServicesCanUseHookEvent @event)
+        private void OnItemServicesCanAcquireHook(IOnWeaponServicesCanUseHookEvent @event)
         {
             var player = Core.PlayerManager.GetPlayer((int)@event.WeaponServices.Pawn.Controller.EntityIndex - 1);
             if (player.IsValid)

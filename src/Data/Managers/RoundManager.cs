@@ -9,7 +9,7 @@ public class RoundManager(ISwiftlyCore _core)
     private IRound? _currentRound;
 
     private CancellationTokenSource? _token = null;
-    private const int ROUND_START_TIME = 10;
+    private const int ROUND_START_TIME = 15;
 
     private readonly Random _randomizer = new();
 
@@ -22,7 +22,7 @@ public class RoundManager(ISwiftlyCore _core)
     {
         _currentRound = _rounds[roundType];
     }
-        
+
     public IRound? GetRound()
     {
         return _currentRound;
@@ -59,7 +59,15 @@ public class RoundManager(ISwiftlyCore _core)
             }
         });
     }
-        
+
+    public void CancelToken()
+    {
+        if (_token != null)
+        {
+            _token.Cancel();
+        }
+    }
+
     private RoundType RandomRound()
     {
         var roundTypes = Enum.GetValues<RoundType>();

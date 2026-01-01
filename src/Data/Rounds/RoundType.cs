@@ -4,6 +4,7 @@
     {
         None = 0,
         Infection = 1,
-        Nemesis = 2
+        Plague = 2,
+        Nemesis = 3
     }
 }

@@ -3,6 +3,7 @@ using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.GameEventDefinitions;
 using SwiftlyS2.Shared.Misc;
 using SwiftlyS2.Shared.Natives;
+using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.Data;
 
@@ -19,12 +20,12 @@ public class Knockback(ISwiftlyCore _core)
         { "weapon_p250", new KnockbackData(225.0f, 100.0f) },
         { "weapon_fiveseven", new KnockbackData(225.0f, 100.0f) },
         { "weapon_cz75a", new KnockbackData(240.0f, 100.0f) },
-        { "weapon_deagle", new KnockbackData(900.0f, 100.0f) },
+        { "weapon_deagle", new KnockbackData(900.0f, 75.0f) },
         { "weapon_revolver", new KnockbackData(900.0f, 125.0f) },
-        { "weapon_nova", new KnockbackData(250.0f, 75.0f) },
-        { "weapon_xm1014", new KnockbackData(250.0f, 75.0f) },
-        { "weapon_sawedoff", new KnockbackData(250.0f, 75.0f) },
-        { "weapon_mag7", new KnockbackData(300.0f, 75.0f) },
+        { "weapon_nova", new KnockbackData(750.0f, 75.0f) },
+        { "weapon_xm1014", new KnockbackData(750.0f, 75.0f) },
+        { "weapon_sawedoff", new KnockbackData(750.0f, 75.0f) },
+        { "weapon_mag7", new KnockbackData(750.0f, 75.0f) },
         { "weapon_m249", new KnockbackData(300.0f, 75.0f) },
         { "weapon_negev", new KnockbackData(300.0f, 150.0f) },
         { "weapon_mac10", new KnockbackData(300.0f, 150.0f) },
@@ -50,10 +51,10 @@ public class Knockback(ISwiftlyCore _core)
 
     public void Start()
     {
-        _core.GameEvent.HookPost<EventPlayerHurt>(OnPlayerHurt);
+        _core.GameEvent.HookPost<EventPlayerHurt>(OnPlayerHurtPost);
     }
 
-    private HookResult OnPlayerHurt(EventPlayerHurt @event)
+    private HookResult OnPlayerHurtPost(EventPlayerHurt @event)
     {
         var victim = _core.PlayerManager.GetPlayer(@event.UserId);
         var attacker = _core.PlayerManager.GetPlayer(@event.Attacker);
@@ -81,21 +82,20 @@ public class Knockback(ISwiftlyCore _core)
         var zombie = CS2ZombiePlague.ZombieManager.GetZombie(victim.PlayerID);
         var zombieKnockback = zombie.GetZombieClass().Knockback;
 
+        bool onGround = victim.Pawn.GroundEntity.Value != null;
+        var zBoost = onGround ? 150f : 25f;
+
         Vector newVelocity = new Vector(
             victim.PlayerPawn.AbsVelocity.X + directionVector.X * recoil * zombieKnockback,
             victim.PlayerPawn.AbsVelocity.Y + directionVector.Y * recoil * zombieKnockback,
-            0
+            zBoost
         );
 
-        if (victim.Pawn.GroundEntity.Value != null)
-        {
-            victim.Teleport(new Vector(victimOrigin.X, victimOrigin.Y, victimOrigin.Z + 20f),
-                victim.PlayerPawn.EyeAngles,
-                new Vector(0, 0, 0));
-        }
+        victim.Pawn.GroundEntity.Value = null;
 
-        victim.PlayerPawn.AbsVelocity.X = newVelocity.X;
-        victim.PlayerPawn.AbsVelocity.Y = newVelocity.Y;
+        victim.Teleport(victimOrigin, victim.PlayerPawn.EyeAngles, newVelocity);
+
+        _core.Scheduler.Delay(20, () => { victim.SetSpeed(zombie.GetZombieClass().Speed); });
 
         return HookResult.Continue;
     }

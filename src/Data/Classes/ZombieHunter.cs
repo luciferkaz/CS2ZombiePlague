@@ -9,7 +9,7 @@ public class ZombieHunter : ZombieClass
     public override string ZombieModel => "characters/models/tm_phoenix/tm_phoenix.vmdl";
     public override string Description => "";
     public override int Health => 3200;
-    public override float Speed => 380.0f;
+    public override float Speed => 300.0f;
     public override float Knockback => 0.9f;
     public override int Gravity => 700;
 

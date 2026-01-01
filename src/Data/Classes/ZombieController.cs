@@ -1,4 +1,5 @@
 ﻿using CS2ZombiePlague.src.Data.Extensions;
+using SwiftlyS2.Shared.Natives;
 using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.Data.Classes;
@@ -18,6 +19,8 @@ public class ZombieController(ZombieClass zombieClass)
             itemServices.RemoveItems();
             itemServices.GiveItem("weapon_knife");
         }
+
+        player.PlayerPawn.Render = new Color(255, 0, 0);
 
         player.SwitchTeam(Team.T);
     }
