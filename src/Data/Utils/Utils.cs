@@ -32,7 +32,7 @@ public class Utils(ISwiftlyCore _core)
 
         return null;
     }
-    
+
     public IPlayer? FindPlayerByPawnAddress(nint address)
     {
         foreach (var player in _core.PlayerManager.GetAllPlayers())
@@ -50,5 +50,65 @@ public class Utils(ISwiftlyCore _core)
         }
 
         return null;
+    }
+
+    public void SortTeam()
+    {
+        int terroristCount = 0;
+        int counterTerroristCount = 0;
+        var allPlayers = _core.PlayerManager.GetAllPlayers();
+
+        foreach (var player in allPlayers)
+        {
+            if (player.Controller == null)
+            {
+                continue;
+            }
+
+            if (player.Controller.TeamNum == (int)Team.CT)
+            {
+                counterTerroristCount++;
+            }
+            else if (player.Controller.TeamNum == (int)Team.T)
+            {
+                terroristCount++;
+            }
+        }
+
+        Team teamToSort;
+        int playersToSort = Math.Abs(counterTerroristCount - terroristCount) / 2;
+
+        if (playersToSort == 0)
+        {
+            return;
+        }
+
+        if (counterTerroristCount > terroristCount)
+        {
+            teamToSort = Team.CT;
+        }
+        else
+        {
+            teamToSort = Team.T;
+        }
+
+        foreach (var player in allPlayers)
+        {
+            if (player.Controller == null)
+            {
+                continue;
+            }
+
+            if (player.Controller.TeamNum == (int)teamToSort)
+            {
+                player.SwitchTeam(teamToSort == Team.CT ? Team.T : Team.CT);
+                playersToSort--;
+            }
+
+            if (playersToSort == 0)
+            {
+                return;
+            }
+        }
     }
 }

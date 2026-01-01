@@ -1,8 +1,7 @@
-﻿namespace CS2ZombiePlague.Data.Rounds
+﻿namespace CS2ZombiePlague.Data.Rounds;
+
+public interface IRound
 {
-    public interface IRound
-    {
-        public void Start();
-        public void End();
-    }
+    public void Start();
+    public void End();
 }

@@ -6,7 +6,7 @@ using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.Data.Rounds;
 
-public class Infection(ISwiftlyCore _core) : IRound
+public class Plague(ISwiftlyCore _core) : IRound
 {
     public void End()
     {
@@ -24,9 +24,21 @@ public class Infection(ISwiftlyCore _core) : IRound
         _core.Event.OnClientDisconnected += ClientDisconnected;
 
         var players = _core.PlayerManager.GetAllPlayers().ToList();
-        var firstZombie = players[Random.Shared.Next(0, players.Count)];
+        var countZombies = Math.Ceiling(players.Count * 0.3);
 
-        CS2ZombiePlague.ZombieManager.CreateZombie(firstZombie);
+        foreach (var player in players)
+        {
+            if (player != null && player.IsValid)
+            {
+                CS2ZombiePlague.ZombieManager.CreateZombie(player);
+                countZombies--;
+            }
+
+            if (countZombies == 0)
+            {
+                break;
+            }
+        }
 
         foreach (var player in players)
         {
@@ -36,7 +48,7 @@ public class Infection(ISwiftlyCore _core) : IRound
             }
         }
 
-        _core.PlayerManager.SendCenter("Первый заражённый => " + firstZombie.Controller.PlayerName);
+        _core.PlayerManager.SendCenter("Массовое заражение!");
     }
 
     private void TakeDamage(IOnEntityTakeDamageEvent @event)
