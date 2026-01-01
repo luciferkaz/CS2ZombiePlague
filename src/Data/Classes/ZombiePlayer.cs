@@ -9,6 +9,7 @@ public class ZombiePlayer
 {
     private readonly ZombieManager _zombieManager;
     private readonly ZombieClass _zombieClass;
+    private readonly IPlayer _player;
     public bool IsNemesis { get; }
 
     public ZombiePlayer(IPlayer player, ZombieManager zombieManager, ZombieClass zombieClass, bool isNemesis = false)
@@ -16,6 +17,7 @@ public class ZombiePlayer
         IsNemesis = isNemesis;
         _zombieManager = zombieManager;
         _zombieClass = zombieClass;
+        _player = player;
 
         Initialize(player, zombieClass);
         
@@ -26,7 +28,7 @@ public class ZombiePlayer
     {
         if (target != null && !target.IsInfected() && !target.IsLastHuman() && target.PlayerPawn.ArmorValue == 0)
         {
-            _zombieManager.CreateZombie(target);
+            _zombieManager.CreateZombie(target, _player.PlayerID, target.PlayerID);
             return true;
         }
 

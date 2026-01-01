@@ -37,8 +37,10 @@ namespace CS2ZombiePlague
 
             Core.GameEvent.HookPost<EventRoundStart>(OnRoundStart);
             Core.GameEvent.HookPost<EventRoundEnd>(OnRoundEnd);
+            
+            
         }
-
+        
         public override void Unload()
         {
         }

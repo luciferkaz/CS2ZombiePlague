@@ -1,9 +1,11 @@
 ﻿using CS2ZombiePlague.Data.Classes;
+using SwiftlyS2.Shared;
+using SwiftlyS2.Shared.GameEventDefinitions;
 using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.Data.Managers;
 
-public class ZombieManager(IZombiePlayerFactory zombiePlayerFactory)
+public class ZombieManager(IZombiePlayerFactory zombiePlayerFactory, ISwiftlyCore core)
 {
     private readonly Dictionary<int, ZombiePlayer> _zombiePlayers = new();
 
@@ -11,6 +13,28 @@ public class ZombieManager(IZombiePlayerFactory zombiePlayerFactory)
     {
         if (player is { IsValid: true })
         {
+            return _zombiePlayers[player.PlayerID] =
+                zombiePlayerFactory.Create(player, this, new ZombieHunter());
+        }
+
+        return null;
+    }
+
+    public ZombiePlayer? CreateZombie(IPlayer player, int attackerID, int VictimID)
+    {
+        if (player is { IsValid: true })
+        {
+            core.GameEvent.Fire<EventPlayerDeath>((@event) =>
+            {
+                @event.UserId = VictimID;
+                @event.Attacker = attackerID;
+                @event.Weapon = "knife";
+                @event.Headshot = false;
+
+                core.PlayerManager.GetPlayer(@event.Attacker).Controller.KillCount += 1;
+                core.PlayerManager.GetPlayer(@event.Attacker).Controller.KillCountUpdated();
+            });
+
             return _zombiePlayers[player.PlayerID] =
                 zombiePlayerFactory.Create(player, this, new ZombieHunter());
         }
