@@ -1,4 +1,6 @@
-﻿using SwiftlyS2.Shared.Players;
+﻿using CS2ZombiePlague.Data.Managers;
+using CS2ZombiePlague.Di;
+using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.Data.Extensions;
 
@@ -62,7 +64,7 @@ public static class PlayerExtensions
 
     public static bool IsInfected(this IPlayer player)
     {
-        var allZombies = CS2ZombiePlague.ZombieManager.GetAllZombies();
+        var allZombies = DependencyManager.GetService<ZombieManager>().GetAllZombies();
         return allZombies.ContainsKey(player.PlayerID);
     }
 
@@ -70,7 +72,7 @@ public static class PlayerExtensions
     {
         if (player.IsInfected())
         {
-            var zombie = CS2ZombiePlague.ZombieManager.GetZombie(player.PlayerID);
+            var zombie = DependencyManager.GetService<ZombieManager>().GetZombie(player.PlayerID);
             return zombie.IsNemesis;
         }
 
@@ -79,6 +81,6 @@ public static class PlayerExtensions
 
     public static bool IsLastHuman(this IPlayer player)
     {
-        return !player.IsInfected() && CS2ZombiePlague.HumanManager.GetCountHumans() == 1;
+        return !player.IsInfected() && DependencyManager.GetService<HumanManager>().GetCountHumans() == 1;
     }
 }

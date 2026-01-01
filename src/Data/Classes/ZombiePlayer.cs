@@ -1,21 +1,24 @@
 ﻿using CS2ZombiePlague.Data.Extensions;
+using CS2ZombiePlague.Data.Managers;
+using SwiftlyS2.Shared.Natives;
 using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.Data.Classes;
 
 public class ZombiePlayer
 {
-    private readonly IPlayer _player;
-    private readonly ZombieController zombieController;
+    private readonly ZombieManager _zombieManager;
+    private readonly ZombieClass _zombieClass;
     public bool IsNemesis { get; }
 
-    public ZombiePlayer(ZombieClass zombieClass, IPlayer player, bool isNemesis = false)
+    public ZombiePlayer(IPlayer player, ZombieManager zombieManager, ZombieClass zombieClass, bool isNemesis = false)
     {
-        _player = player;
         IsNemesis = isNemesis;
-        zombieController = new ZombieController(zombieClass);
+        _zombieManager = zombieManager;
+        _zombieClass = zombieClass;
 
-        zombieClass.Initialize(_player, zombieController);
+        Initialize(player, zombieClass);
+        
         player.SendAlert("Ваш класс => " + zombieClass.DisplayName);
     }
 
@@ -23,7 +26,7 @@ public class ZombiePlayer
     {
         if (target != null && !target.IsInfected() && !target.IsLastHuman() && target.PlayerPawn.ArmorValue == 0)
         {
-            zombieController.Infect(target);
+            _zombieManager.CreateZombie(target);
             return true;
         }
 
@@ -32,6 +35,25 @@ public class ZombiePlayer
 
     public ZombieClass GetZombieClass()
     {
-        return zombieController.GetZombieClass();
+        return _zombieClass;
+    }
+
+    private void Initialize(IPlayer player, ZombieClass zombieClass)
+    {
+        player.SetHealth(zombieClass.Health);
+        player.SetSpeed(zombieClass.Speed);
+        player.SetGravity(zombieClass.Gravity);
+        player.SetModel(zombieClass.ZombieModel);
+
+        var itemServices = player.PlayerPawn?.ItemServices;
+        if (itemServices != null)
+        {
+            itemServices.RemoveItems();
+            itemServices.GiveItem("weapon_knife");
+        }
+
+        player.PlayerPawn.Render = new Color(255, 0, 0);
+
+        player.SwitchTeam(Team.T);
     }
 }

@@ -13,9 +13,4 @@ public class ZombieNemesis : ZombieClass
 
     public override float Knockback => 1.2f;
     public override int Gravity => 500;
-
-    public override void Initialize(IPlayer player, ZombieController zombieController)
-    {
-        zombieController.InitializeZombiePlayer(player);
-    }
 }

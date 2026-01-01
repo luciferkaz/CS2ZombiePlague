@@ -12,8 +12,4 @@ public class ZombieHeavy : ZombieClass
     public override float Speed => 240.0f;
     public override float Knockback => 0.3f;
     public override int Gravity => 900;
-    public override void Initialize(IPlayer player, ZombieController zombieController)
-    {
-        zombieController.InitializeZombiePlayer(player);
-    }
 }

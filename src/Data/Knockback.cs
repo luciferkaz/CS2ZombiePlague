@@ -1,17 +1,17 @@
 ﻿using CS2ZombiePlague.Data.Extensions;
+using CS2ZombiePlague.Data.Managers;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.GameEventDefinitions;
 using SwiftlyS2.Shared.Misc;
 using SwiftlyS2.Shared.Natives;
-using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.Data;
 
-public class Knockback(ISwiftlyCore _core)
+public class Knockback(ISwiftlyCore core, ZombieManager zombieManager)
 {
     private record KnockbackData(float Recoil, float PickDistance);
 
-    private readonly Dictionary<string, KnockbackData> _weaponKnockback = new Dictionary<string, KnockbackData>()
+    private readonly Dictionary<string, KnockbackData> _weaponKnockback = new()
     {
         { "weapon_glock", new KnockbackData(150.0f, 100.0f) },
         { "weapon_usp_silencer", new KnockbackData(160.0f, 100.0f) },
@@ -51,13 +51,13 @@ public class Knockback(ISwiftlyCore _core)
 
     public void Start()
     {
-        _core.GameEvent.HookPost<EventPlayerHurt>(OnPlayerHurtPost);
+        core.GameEvent.HookPost<EventPlayerHurt>(OnPlayerHurtPost);
     }
 
     private HookResult OnPlayerHurtPost(EventPlayerHurt @event)
     {
-        var victim = _core.PlayerManager.GetPlayer(@event.UserId);
-        var attacker = _core.PlayerManager.GetPlayer(@event.Attacker);
+        var victim = core.PlayerManager.GetPlayer(@event.UserId);
+        var attacker = core.PlayerManager.GetPlayer(@event.Attacker);
         if (victim == null || attacker == null)
         {
             return HookResult.Continue;
@@ -79,7 +79,7 @@ public class Knockback(ISwiftlyCore _core)
         float recoil = GetGunRecoil(distance, _weaponKnockback[weaponName].Recoil,
             _weaponKnockback[weaponName].PickDistance);
 
-        var zombie = CS2ZombiePlague.ZombieManager.GetZombie(victim.PlayerID);
+        var zombie = zombieManager.GetZombie(victim.PlayerID);
         var zombieKnockback = zombie.GetZombieClass().Knockback;
 
         bool onGround = victim.Pawn.GroundEntity.Value != null;
@@ -95,7 +95,7 @@ public class Knockback(ISwiftlyCore _core)
 
         victim.Teleport(victimOrigin, victim.PlayerPawn.EyeAngles, newVelocity);
 
-        _core.Scheduler.Delay(20, () => { victim.SetSpeed(zombie.GetZombieClass().Speed); });
+        core.Scheduler.Delay(20, () => { victim.SetSpeed(zombie.GetZombieClass().Speed); });
 
         return HookResult.Continue;
     }

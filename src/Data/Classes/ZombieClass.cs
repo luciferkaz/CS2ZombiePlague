@@ -12,6 +12,4 @@ public abstract class ZombieClass
     public abstract float Speed { get; }
     public abstract float Knockback { get; }
     public abstract int Gravity { get; }
-
-    public abstract void Initialize(IPlayer player, ZombieController zombieController);
 }

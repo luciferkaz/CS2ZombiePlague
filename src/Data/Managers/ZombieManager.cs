@@ -1,19 +1,18 @@
 ﻿using CS2ZombiePlague.Data.Classes;
-using CS2ZombiePlague.Data.Rounds;
-using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.Data.Managers;
 
-public class ZombieManager
+public class ZombieManager(IZombiePlayerFactory zombiePlayerFactory)
 {
-    private Dictionary<int, ZombiePlayer> _zombiePlayers = new()!;
+    private readonly Dictionary<int, ZombiePlayer> _zombiePlayers = new();
 
     public ZombiePlayer? CreateZombie(IPlayer player)
     {
-        if (player != null && player.IsValid)
+        if (player is { IsValid: true })
         {
-            return _zombiePlayers[player.PlayerID] = new ZombiePlayer(new ZombieHunter(), player);
+            return _zombiePlayers[player.PlayerID] =
+                zombiePlayerFactory.Create(player, this, new ZombieHunter());
         }
 
         return null;
@@ -21,9 +20,10 @@ public class ZombieManager
 
     public ZombiePlayer? CreateNemesis(IPlayer player)
     {
-        if (player != null && player.IsValid)
+        if (player is { IsValid: true })
         {
-            return _zombiePlayers[player.PlayerID] = new ZombiePlayer(new ZombieNemesis(), player);
+            return _zombiePlayers[player.PlayerID] =
+                zombiePlayerFactory.Create(player, this, new ZombieNemesis(), true);
         }
 
         return null;

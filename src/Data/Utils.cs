@@ -3,9 +3,9 @@ using SwiftlyS2.Shared.Natives;
 using SwiftlyS2.Shared.Players;
 using SwiftlyS2.Shared.SchemaDefinitions;
 
-namespace CS2ZombiePlague.Data.Utils;
+namespace CS2ZombiePlague.Data;
 
-public class Utils(ISwiftlyCore _core)
+public class Utils(ISwiftlyCore core)
 {
     public IPlayer? ResolvePlayerFromHandle(CHandle<CEntityInstance> handle)
     {
@@ -16,7 +16,7 @@ public class Utils(ISwiftlyCore _core)
         if (entity == null)
             return null;
 
-        foreach (var player in _core.PlayerManager.GetAllPlayers())
+        foreach (var player in core.PlayerManager.GetAllPlayers())
         {
             try
             {
@@ -35,7 +35,7 @@ public class Utils(ISwiftlyCore _core)
 
     public IPlayer? FindPlayerByPawnAddress(nint address)
     {
-        foreach (var player in _core.PlayerManager.GetAllPlayers())
+        foreach (var player in core.PlayerManager.GetAllPlayers())
         {
             try
             {
@@ -56,7 +56,7 @@ public class Utils(ISwiftlyCore _core)
     {
         int terroristCount = 0;
         int counterTerroristCount = 0;
-        var allPlayers = _core.PlayerManager.GetAllPlayers();
+        var allPlayers = core.PlayerManager.GetAllPlayers();
 
         foreach (var player in allPlayers)
         {

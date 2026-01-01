@@ -5,24 +5,8 @@ using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.Data.Managers;
 
-public class HumanManager(ISwiftlyCore _core)
+public class HumanManager(ISwiftlyCore core)
 {
-    public List<IPlayer> GetAllHumans()
-    {
-        List<IPlayer> humans = new();
-
-        var allPlayers = _core.PlayerManager.GetAllPlayers();
-        foreach (var player in allPlayers)
-        {
-            if (player != null && !player.IsInfected() && player.Controller.PawnIsAlive)
-            {
-                humans.Add(player);
-            }
-        }
-
-        return humans;
-    }
-
     public int GetCountHumans()
     {
         var humans = GetAllHumans();
@@ -40,5 +24,21 @@ public class HumanManager(ISwiftlyCore _core)
                 human.Pawn.Render = new Color(255, 255, 255);
             }
         }
+    }
+    
+    private List<IPlayer> GetAllHumans()
+    {
+        List<IPlayer> humans = [];
+
+        var allPlayers = core.PlayerManager.GetAllPlayers();
+        foreach (var player in allPlayers)
+        {
+            if (player != null && !player.IsInfected() && player.Controller.PawnIsAlive)
+            {
+                humans.Add(player);
+            }
+        }
+
+        return humans;
     }
 }

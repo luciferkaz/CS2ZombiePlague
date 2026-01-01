@@ -2,80 +2,40 @@ using CS2ZombiePlague.Data;
 using CS2ZombiePlague.Data.Extensions;
 using CS2ZombiePlague.Data.Managers;
 using CS2ZombiePlague.Data.Rounds;
-using CS2ZombiePlague.Data.Utils;
-using Microsoft.Extensions.DependencyInjection;
+using CS2ZombiePlague.Di;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Events;
 using SwiftlyS2.Shared.GameEventDefinitions;
 using SwiftlyS2.Shared.GameEvents;
 using SwiftlyS2.Shared.Misc;
-using SwiftlyS2.Shared.Natives;
-using SwiftlyS2.Shared.Players;
 using SwiftlyS2.Shared.Plugins;
 
 namespace CS2ZombiePlague
 {
     [PluginMetadata(Id = "CS2ZombiePlague", Version = "1.0.0", Name = "CS2ZombiePlague", Author = "illusion & fdrinv",
         Description = "Zombie Plague mode for CS2")]
-    public partial class CS2ZombiePlague : BasePlugin
+    public partial class CS2ZombiePlague(ISwiftlyCore core) : BasePlugin(core)
     {
-        private ServiceProvider? _provider;
-
-        public static ZombieManager ZombieManager = null!;
-        public static RoundManager RoundManager = null!;
-        public static HumanManager HumanManager = null!;
-        public static Utils Utils = null!;
-        public static Knockback Knockback = null!;
-
-        public CS2ZombiePlague(ISwiftlyCore core) : base(core)
-        {
-        }
-
-        public override void ConfigureSharedInterface(IInterfaceManager interfaceManager)
-        {
-        }
-
-        public override void UseSharedInterface(IInterfaceManager interfaceManager)
-        {
-        }
+        private readonly Lazy<RoundManager> _roundManager = new(DependencyManager.GetService<RoundManager>);
+        private readonly Lazy<ZombieManager> _zombieManager = new(DependencyManager.GetService<ZombieManager>);
+        private readonly Lazy<HumanManager> _humanManager = new(DependencyManager.GetService<HumanManager>);
+        private readonly Lazy<Knockback> _knockback = new(DependencyManager.GetService<Knockback>);
+        private readonly Lazy<Utils> _utils = new(DependencyManager.GetService<Utils>);
 
         public override void Load(bool hotReload)
         {
             if (hotReload)
             {
-                _provider?.Dispose();
+                DependencyManager.Dispose();
             }
 
-            ServiceCollection services = new();
-            services
-                .AddSwiftly(Core)
-                .AddSingleton<ZombieManager>()
-                .AddSingleton<RoundManager>()
-                .AddSingleton<HumanManager>()
-                .AddSingleton<Knockback>()
-                .AddSingleton<Utils>();
+            DependencyManager.Load(Core);
 
-            _provider = services.BuildServiceProvider();
-
-            ZombieManager = _provider.GetRequiredService<ZombieManager>();
-            RoundManager = _provider.GetRequiredService<RoundManager>();
-            HumanManager = _provider.GetRequiredService<HumanManager>();
-            Utils = _provider.GetRequiredService<Utils>();
-            Knockback = _provider.GetRequiredService<Knockback>();
-
-            RegisterRounds();
-            Knockback.Start();
+            _roundManager.Value.RegisterRounds();
+            _knockback.Value.Start();
 
             Core.GameEvent.HookPost<EventRoundStart>(OnRoundStart);
             Core.GameEvent.HookPost<EventRoundEnd>(OnRoundEnd);
-        }
-
-        private void RegisterRounds()
-        {
-            RoundManager.Register(RoundType.None, new None());
-            RoundManager.Register(RoundType.Infection, new Infection(Core));
-            RoundManager.Register(RoundType.Plague, new Plague(Core));
-            RoundManager.Register(RoundType.Nemesis, new Nemesis(Core));
         }
 
         public override void Unload()
@@ -84,16 +44,21 @@ namespace CS2ZombiePlague
 
         private HookResult OnRoundStart(EventRoundStart @event)
         {
-            ZombieManager.RemoveAll();
-            RoundManager.CancelToken();
-            Utils.SortTeam();
-            HumanManager.SetHumanModelAll();
+            var zombieManager = _zombieManager.Value;
+            var roundManager = _roundManager.Value;
+            var humanManager = _humanManager.Value;
+            var utils = _utils.Value;
+            
+            zombieManager.RemoveAll();
+            roundManager.CancelToken();
+            humanManager.SetHumanModelAll();
+            utils.SortTeam();
 
-            RoundManager.SetRound(RoundType.None);
+            roundManager.SetRound(RoundType.None);
 
-            if (RoundManager.RoundIsAvailable())
+            if (roundManager.RoundIsAvailable())
             {
-                RoundManager.Start();
+                roundManager.Start();
             }
 
             return HookResult.Continue;
@@ -102,13 +67,14 @@ namespace CS2ZombiePlague
         [GameEventHandler(HookMode.Pre)]
         private HookResult OnPlayerHurt(EventPlayerHurt @event)
         {
+            var roundManager = _roundManager.Value;
             var victim = Core.PlayerManager.GetPlayer(@event.UserId);
             if (victim == null)
             {
                 return HookResult.Continue;
             }
 
-            if (RoundManager.IsNoneRound())
+            if (roundManager.IsNoneRound())
             {
                 victim.SetHealth(victim.PlayerPawn.Health + @event.DmgHealth);
             }
@@ -118,9 +84,10 @@ namespace CS2ZombiePlague
 
         private HookResult OnRoundEnd(EventRoundEnd @event)
         {
-            if (RoundManager.GetRound() != null)
+            var roundManager = _roundManager.Value;
+            if (roundManager.GetRound() != null)
             {
-                RoundManager.GetRound()?.End();
+                roundManager.GetRound()?.End();
             }
 
             return HookResult.Continue;

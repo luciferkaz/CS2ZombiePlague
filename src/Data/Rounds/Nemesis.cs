@@ -1,18 +1,18 @@
 ﻿using CS2ZombiePlague.Data.Extensions;
+using CS2ZombiePlague.Data.Managers;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Players;
-using SwiftlyS2.Shared.SchemaDefinitions;
 
 namespace CS2ZombiePlague.Data.Rounds;
 
-public class Nemesis(ISwiftlyCore _core) : IRound
+public class Nemesis(ISwiftlyCore core, RoundManager roundManager, ZombieManager zombieManager) : IRound
 {
     public void Start()
     {
-        var players = _core.PlayerManager.GetAllPlayers().ToList();
+        var players = core.PlayerManager.GetAllPlayers().ToList();
         var nemesis = players[Random.Shared.Next(0, players.Count)];
 
-        CS2ZombiePlague.ZombieManager.CreateNemesis(nemesis);
+        zombieManager.CreateNemesis(nemesis);
 
         Initialize(nemesis);
 
@@ -24,21 +24,21 @@ public class Nemesis(ISwiftlyCore _core) : IRound
             }
         }
 
-        _core.PlayerManager.SendCenter("[red]Немезида => " + nemesis.Controller.PlayerName);
+        core.PlayerManager.SendCenter("[red]Немезида => " + nemesis.Controller.PlayerName);
     }
 
     public void End()
     {
-        CS2ZombiePlague.RoundManager.SetRound(RoundType.None);
+        roundManager.SetRound(RoundType.None);
 
-        _core.PlayerManager.SendCenter("Раунд окончен");
+        core.PlayerManager.SendCenter("Раунд окончен");
     }
 
     private void Initialize(IPlayer nemesis)
     {
-        var zombieNemesis = CS2ZombiePlague.ZombieManager.GetZombie(nemesis.PlayerID);
+        var zombieNemesis = zombieManager.GetZombie(nemesis.PlayerID);
         var zombieClass = zombieNemesis.GetZombieClass();
-        var countPlayers = _core.PlayerManager.GetAllPlayers().Count();
+        var countPlayers = core.PlayerManager.GetAllPlayers().Count();
 
         nemesis.SetHealth(zombieClass.Health * countPlayers);
     }

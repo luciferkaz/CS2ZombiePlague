@@ -3,17 +3,25 @@ using SwiftlyS2.Shared;
 
 namespace CS2ZombiePlague.Data.Managers;
 
-public class RoundManager(ISwiftlyCore _core)
+public class RoundManager(ISwiftlyCore core, IRoundFactory roundFactory)
 {
     private readonly Dictionary<RoundType, IRound> _rounds = new();
     private IRound? _currentRound;
 
-    private CancellationTokenSource? _token = null;
-    private const int ROUND_START_TIME = 15;
+    private CancellationTokenSource? _token;
+    private const int RoundStartTime = 15;
 
     private readonly Random _randomizer = new();
 
-    public void Register(RoundType roundType, IRound round)
+    public void RegisterRounds()
+    {
+        Register(RoundType.None, roundFactory.Create(RoundType.None, this));
+        Register(RoundType.Infection, roundFactory.Create(RoundType.Infection, this));
+        Register(RoundType.Plague, roundFactory.Create(RoundType.Plague, this));
+        Register(RoundType.Nemesis, roundFactory.Create(RoundType.Nemesis, this));
+    }
+
+    private void Register(RoundType roundType, IRound round)
     {
         _rounds.Add(roundType, round);
     }
@@ -30,7 +38,7 @@ public class RoundManager(ISwiftlyCore _core)
 
     public bool RoundIsAvailable()
     {
-        var players = _core.PlayerManager.GetAllPlayers();
+        var players = core.PlayerManager.GetAllPlayers();
         return players.Count() > 1;
     }
 
@@ -42,12 +50,12 @@ public class RoundManager(ISwiftlyCore _core)
     public void Start()
     {
         int localTime = 0;
-        _token = _core.Scheduler.RepeatBySeconds(1, () =>
+        _token = core.Scheduler.RepeatBySeconds(1, () =>
         {
             localTime += 1;
-            _core.PlayerManager.SendCenter("До заражения " + (ROUND_START_TIME - localTime) + " секунд");
+            core.PlayerManager.SendCenter("До заражения " + (RoundStartTime - localTime) + " секунд");
 
-            if (localTime >= ROUND_START_TIME)
+            if (localTime >= RoundStartTime)
             {
                 if (_currentRound == _rounds[RoundType.None])
                 {
