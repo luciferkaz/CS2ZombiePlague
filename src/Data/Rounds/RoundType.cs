@@ -1,10 +1,9 @@
-﻿namespace CS2ZombiePlague.Data.Rounds
+﻿namespace CS2ZombiePlague.Data.Rounds;
+
+public enum RoundType
 {
-    public enum RoundType
-    {
-        None = 0,
-        Infection = 1,
-        Plague = 2,
-        Nemesis = 3
-    }
+    None = 0,
+    Infection = 1,
+    Plague = 2,
+    Nemesis = 3
 }

@@ -4,72 +4,71 @@ using SwiftlyS2.Shared.Events;
 using SwiftlyS2.Shared.Misc;
 using SwiftlyS2.Shared.Players;
 
-namespace CS2ZombiePlague.Data.Rounds
+namespace CS2ZombiePlague.Data.Rounds;
+
+public class Infection(ISwiftlyCore _core) : IRound
 {
-    public class Infection(ISwiftlyCore _core) : IRound
+    public void End()
     {
-        public void End()
+        _core.Event.OnEntityTakeDamage -= TakeDamage;
+        _core.Event.OnClientDisconnected -= ClientDisconnected;
+
+        CS2ZombiePlague.RoundManager.SetRound(RoundType.None);
+
+        _core.PlayerManager.SendCenter("Раунд окончен");
+    }
+
+    public void Start()
+    {
+        _core.Event.OnEntityTakeDamage += TakeDamage;
+        _core.Event.OnClientDisconnected += ClientDisconnected;
+
+        var players = _core.PlayerManager.GetAllPlayers().ToList();
+        var firstZombie = players[Random.Shared.Next(0, players.Count)];
+
+        CS2ZombiePlague.ZombieManager.CreateZombie(firstZombie);
+
+        foreach (var player in players)
         {
-            _core.Event.OnEntityTakeDamage -= TakeDamage;
-            _core.Event.OnClientDisconnected -= ClientDisconnected;
-
-            CS2ZombiePlague.RoundManager.SetRound(RoundType.None);
-
-            _core.PlayerManager.SendCenter("Раунд окончен");
+            if (!player.IsInfected())
+            {
+                player.SwitchTeam(Team.CT);
+            }
         }
 
-        public void Start()
-        {
-            _core.Event.OnEntityTakeDamage += TakeDamage;
-            _core.Event.OnClientDisconnected += ClientDisconnected;
+        _core.PlayerManager.SendCenter("Первый заражённый => " + firstZombie.Controller.PlayerName);
+    }
 
+    private void TakeDamage(IOnEntityTakeDamageEvent @event)
+    {
+        var attacker = CS2ZombiePlague.Utils.ResolvePlayerFromHandle(@event.Info.Attacker);
+        var victim = CS2ZombiePlague.Utils.FindPlayerByPawnAddress(@event.Entity.Address);
+        if (victim == null || !victim.IsValid || attacker == null)
+            return;
+        if (attacker.IsInfected())
+        {
+            var zombie = CS2ZombiePlague.ZombieManager.GetZombie(attacker.PlayerID);
+            if (!zombie.Infect(victim))
+            {
+                victim.SetArmor(victim.PlayerPawn.ArmorValue - (int)@event.Info.Damage);
+
+                if (!victim.IsLastHuman())
+                {
+                    victim.PlayerPawn?.Health = victim.PlayerPawn.Health + (int)@event.Info.Damage;
+                }
+            }
+        }
+    }
+
+    private void ClientDisconnected(IOnClientDisconnectedEvent @event)
+    {
+        var player = _core.PlayerManager.GetPlayer(@event.PlayerId);
+        if (player.IsInfected() && CS2ZombiePlague.ZombieManager.GetAllZombies().Count == 1)
+        {
             var players = _core.PlayerManager.GetAllPlayers().ToList();
-            var firstZombie = players[Random.Shared.Next(0, players.Count)];
+            var newZombie = players[Random.Shared.Next(0, players.Count)];
 
-            CS2ZombiePlague.ZombieManager.CreateZombie(firstZombie);
-
-            foreach (var player in players)
-            {
-                if (!player.IsInfected())
-                {
-                    player.SwitchTeam(Team.CT);
-                }
-            }
-
-            _core.PlayerManager.SendCenter("Первый заражённый => " + firstZombie.Controller.PlayerName);
-        }
-
-        private void TakeDamage(IOnEntityTakeDamageEvent @event)
-        {
-            var attacker = CS2ZombiePlague.Utils.ResolvePlayerFromHandle(@event.Info.Attacker);
-            var victim = CS2ZombiePlague.Utils.FindPlayerByPawnAddress(@event.Entity.Address);
-            if (victim == null || !victim.IsValid || attacker == null)
-                return;
-            if (attacker.IsInfected())
-            {
-                var zombie = CS2ZombiePlague.ZombieManager.GetZombie(attacker.PlayerID);
-                if (!zombie.Infect(victim))
-                {
-                    victim.SetArmor(victim.PlayerPawn.ArmorValue - (int)@event.Info.Damage);
-
-                    if (!victim.IsLastHuman())
-                    {
-                        victim.PlayerPawn?.Health = victim.PlayerPawn.Health + (int)@event.Info.Damage;
-                    }
-                }
-            }
-        }
-
-        private void ClientDisconnected(IOnClientDisconnectedEvent @event)
-        {
-            var player = _core.PlayerManager.GetPlayer(@event.PlayerId);
-            if (player.IsInfected() && CS2ZombiePlague.ZombieManager.GetAllZombies().Count == 1)
-            {
-                var players = _core.PlayerManager.GetAllPlayers().ToList();
-                var newZombie = players[Random.Shared.Next(0, players.Count)];
-
-                CS2ZombiePlague.ZombieManager.CreateZombie(newZombie);
-            }
+            CS2ZombiePlague.ZombieManager.CreateZombie(newZombie);
         }
     }
 }
