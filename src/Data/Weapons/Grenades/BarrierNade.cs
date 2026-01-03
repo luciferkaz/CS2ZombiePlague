@@ -15,9 +15,12 @@ public class BarrierNade(ISwiftlyCore core, RoundManager roundManager, Utils uti
     public string IternalName => "barrier_nade";
     public string DisplayName => "BarrierNade";
 
-    readonly float _explodeRadius = 175.0f;
-    readonly float _liveTime = 15.0f;
-    readonly float _knockbackDistance = 200.0f;
+    private const float ExplodeRadius = 175.0f;
+    private const float LiveTime = 15.0f;
+    private const float KnockbackDistance = 200.0f;
+    private const float Delay = 0.05f;
+    
+    private const string EffectName = "particles/kolka/part11.vpcf";
 
     public void Load()
     {
@@ -28,18 +31,19 @@ public class BarrierNade(ISwiftlyCore core, RoundManager roundManager, Utils uti
     {
         var startTime = 0f;
 
-        var particle = core.EntitySystem.CreateEntity<CBaseModelEntity>();
-        particle.SetModel("characters/models/tm_phoenix/tm_phoenix.vmdl");
+        var particle = core.EntitySystem.CreateEntity<CParticleSystem>();
+        particle.EffectName = EffectName;
+        particle.StartActive = true;
+        
         particle.DispatchSpawn();
         particle.Teleport(position, null, null);
 
         CancellationTokenSource token = null!;
-        var delay = 0.05f;
 
-        token = core.Scheduler.RepeatBySeconds(delay, () =>
+        token = core.Scheduler.RepeatBySeconds(Delay, () =>
         {
-            startTime += delay;
-            var playersInRadius = utils.FindAllPlayersInSphere(_explodeRadius, position);
+            startTime += Delay;
+            var playersInRadius = utils.FindAllPlayersInSphere(ExplodeRadius, position);
 
             foreach (var player in playersInRadius)
             {
@@ -49,7 +53,7 @@ public class BarrierNade(ISwiftlyCore core, RoundManager roundManager, Utils uti
                 }
             }
 
-            if (startTime >= _liveTime || roundManager.IsNoneRound())
+            if (startTime >= LiveTime || roundManager.IsNoneRound())
             {
                 if (particle != null)
                 {
@@ -87,8 +91,8 @@ public class BarrierNade(ISwiftlyCore core, RoundManager roundManager, Utils uti
         var zBoost = onGround ? 150f : 25f;
 
         Vector newVelocity = new Vector(
-            playerPawn.AbsVelocity.X + directionVector.X * _knockbackDistance,
-            playerPawn.AbsVelocity.Y + directionVector.Y * _knockbackDistance,
+            playerPawn.AbsVelocity.X + directionVector.X * KnockbackDistance,
+            playerPawn.AbsVelocity.Y + directionVector.Y * KnockbackDistance,
             zBoost
         );
 

@@ -20,8 +20,8 @@ public class FrostNade(ISwiftlyCore core, RoundManager roundManager, Utils utils
     private readonly Dictionary<int, Color> _oldRender = new();
     private readonly Dictionary<int, IPlayer> _frozenPlayers = new();
 
-    private readonly float _explodeRadius = 200.0f;
-    private readonly float _freezeTime = 5.0f;
+    private const float ExplodeRadius = 200.0f;
+    private const float FreezeTime = 5.0f;
 
     public void Load()
     {
@@ -31,7 +31,7 @@ public class FrostNade(ISwiftlyCore core, RoundManager roundManager, Utils utils
 
     public void Explode(int userid, Vector position)
     {
-        var playersInRadius = utils.FindAllPlayersInSphere(_explodeRadius, position);
+        var playersInRadius = utils.FindAllPlayersInSphere(ExplodeRadius, position);
 
         foreach (var player in playersInRadius)
         {
@@ -83,7 +83,7 @@ public class FrostNade(ISwiftlyCore core, RoundManager roundManager, Utils utils
                 token.Cancel();
             }
 
-            if (startTime >= _freezeTime || !player.IsInfected() || roundManager.IsNoneRound() ||
+            if (startTime >= FreezeTime || !player.IsInfected() || roundManager.IsNoneRound() ||
                 !player.Controller.PawnIsAlive)
             {
                 _frozenPlayers[player.PlayerID] = null;

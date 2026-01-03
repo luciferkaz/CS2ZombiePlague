@@ -54,8 +54,6 @@ public class ZombiePlayer
             itemServices.GiveItem("weapon_knife");
         }
 
-        player.PlayerPawn.Render = new Color(255, 0, 0);
-
         player.SwitchTeam(Team.T);
     }
 }

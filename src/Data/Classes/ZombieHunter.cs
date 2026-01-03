@@ -6,7 +6,7 @@ public class ZombieHunter : ZombieClass
 {
     public override string InternalName => "zombie_hunter";
     public override string DisplayName => "Zombie Hunter";
-    public override string ZombieModel => "characters/models/tm_phoenix/tm_phoenix.vmdl";
+    public override string ZombieModel => "characters/models/s2ze/zombie_frozen/zombie_frozen.vmdl";
     public override string Description => "";
     public override int Health => 3200;
     public override float Speed => 300.0f;
