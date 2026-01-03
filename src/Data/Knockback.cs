@@ -63,12 +63,17 @@ public class Knockback(ISwiftlyCore core, ZombieManager zombieManager)
             return HookResult.Continue;
         }
 
-        if (!victim.IsInfected() || attacker.IsInfected())
+        if (!victim.IsInfected() || attacker.IsInfected() ||  victim.IsFrozen())
         {
             return HookResult.Continue;
         }
 
         var weaponName = $"weapon_{@event.Weapon}";
+
+        if (_weaponKnockback[weaponName] == null)
+        {
+            return  HookResult.Continue;
+        }
 
         var victimOrigin = victim.Pawn!.AbsOrigin.Value;
         var attackerOrigin = attacker.Pawn!.AbsOrigin.Value;

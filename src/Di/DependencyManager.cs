@@ -3,6 +3,7 @@ using CS2ZombiePlague.Data;
 using CS2ZombiePlague.Data.Classes;
 using CS2ZombiePlague.Data.Managers;
 using CS2ZombiePlague.Data.Rounds;
+using CS2ZombiePlague.Data.Weapons;
 using Microsoft.Extensions.DependencyInjection;
 using SwiftlyS2.Shared;
 
@@ -25,6 +26,7 @@ public static class DependencyManager
             .AddSingleton<RoundManager>()
             .AddSingleton<HumanManager>()
             .AddSingleton<Knockback>()
+            .AddSingleton<WeaponManager>()
             .AddSingleton<Utils>();
 
         _provider = _services.BuildServiceProvider();

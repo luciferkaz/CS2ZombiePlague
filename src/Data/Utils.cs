@@ -1,7 +1,9 @@
-﻿using SwiftlyS2.Shared;
+﻿using System.Numerics;
+using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Natives;
 using SwiftlyS2.Shared.Players;
 using SwiftlyS2.Shared.SchemaDefinitions;
+using Vector = SwiftlyS2.Shared.Natives.Vector;
 
 namespace CS2ZombiePlague.Data;
 
@@ -139,5 +141,25 @@ public class Utils(ISwiftlyCore core)
                 return;
             }
         }
+    }
+    
+    public List<IPlayer> FindAllPlayersInSphere(float radius, Vector position)
+    {
+        var allPlayers = core.PlayerManager.GetAllPlayers();
+        List<IPlayer> findedPlayers = new();
+        
+        foreach (IPlayer player in allPlayers)
+        {
+            if (player != null && player.IsValid && player.Controller.PawnIsAlive)
+            {
+                var playerPosition = player.Pawn.AbsOrigin.Value;
+                if (Math.Sqrt(Math.Pow(playerPosition.X - position.X, 2) + Math.Pow(playerPosition.Y - position.Y, 2) +
+                              Math.Pow(playerPosition.Z - position.Z, 2)) <= radius)
+                {
+                    findedPlayers.Add(player);
+                }
+            }
+        }
+        return findedPlayers;
     }
 }

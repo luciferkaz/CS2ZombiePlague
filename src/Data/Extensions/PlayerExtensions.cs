@@ -2,6 +2,7 @@
 using CS2ZombiePlague.Di;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Players;
+using SwiftlyS2.Shared.SchemaDefinitions;
 
 namespace CS2ZombiePlague.Data.Extensions;
 
@@ -85,5 +86,10 @@ public static class PlayerExtensions
     public static bool IsLastHuman(this IPlayer player)
     {
         return !player.IsInfected() && DependencyManager.GetService<HumanManager>().GetCountHumans() == 1;
+    }
+    
+    public static bool IsFrozen(this IPlayer player)
+    {
+        return player.PlayerPawn != null && (player.PlayerPawn.MoveType == MoveType_t.MOVETYPE_FLY ? true : false);
     }
 }

@@ -20,7 +20,7 @@ public class ZombieManager(IZombiePlayerFactory zombiePlayerFactory, ISwiftlyCor
         return null;
     }
 
-    public ZombiePlayer? CreateZombie(IPlayer player, int attackerid, int victimid)
+    public void CreateZombie(IPlayer player, int attackerid, int victimid)
     {
         if (player is { IsValid: true })
         {
@@ -34,12 +34,13 @@ public class ZombieManager(IZombiePlayerFactory zombiePlayerFactory, ISwiftlyCor
                 core.PlayerManager.GetPlayer(@event.Attacker).Controller.KillCount += 1;
                 core.PlayerManager.GetPlayer(@event.Attacker).Controller.KillCountUpdated();
             });
-
-            return _zombiePlayers[player.PlayerID] =
-                zombiePlayerFactory.Create(player, this, new ZombieHunter());
+            
+            core.Scheduler.NextTick(() =>
+            {
+                _zombiePlayers[player.PlayerID] =
+                    zombiePlayerFactory.Create(player, this, new ZombieHunter());
+            });
         }
-
-        return null;
     }
 
     public ZombiePlayer? CreateNemesis(IPlayer player)
