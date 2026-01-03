@@ -22,7 +22,9 @@ public class FrostNade(ISwiftlyCore core, RoundManager roundManager, Utils utils
 
     private const float ExplodeRadius = 200.0f;
     private const float FreezeTime = 5.0f;
-
+    private const float Delay = 0.1f;
+    private const float StartTime = 0f;
+    
     public void Load()
     {
         core.GameEvent.HookPre<EventHegrenadeDetonate>(PreEventGrenadeDetonate);
@@ -71,12 +73,12 @@ public class FrostNade(ISwiftlyCore core, RoundManager roundManager, Utils utils
 
     private void CreateStateHandler(IPlayer player)
     {
-        var startTime = 0f;
+        var startTime = StartTime;
 
         CancellationTokenSource token = null!;
-        token = core.Scheduler.RepeatBySeconds(0.1f, () =>
+        token = core.Scheduler.RepeatBySeconds(Delay, () =>
         {
-            startTime += 0.1f;
+            startTime += Delay;
 
             if (player == null && !player.Controller.PawnIsAlive)
             {

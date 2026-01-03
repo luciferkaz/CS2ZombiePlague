@@ -19,8 +19,11 @@ public class BarrierNade(ISwiftlyCore core, RoundManager roundManager, Utils uti
     private const float LiveTime = 15.0f;
     private const float KnockbackDistance = 200.0f;
     private const float Delay = 0.05f;
+    private const float StartTime = 0f;
+    private const float HighZBoost = 150f;
+    private const float LowZBoost = 25f;
     
-    private const string EffectName = "particles/kolka/part11.vpcf";
+    private const string ParticleEffectName = "particles/kolka/part11.vpcf";
 
     public void Load()
     {
@@ -29,10 +32,10 @@ public class BarrierNade(ISwiftlyCore core, RoundManager roundManager, Utils uti
 
     public void Explode(int userid, Vector position)
     {
-        var startTime = 0f;
+        var startTime = StartTime;
 
         var particle = core.EntitySystem.CreateEntity<CParticleSystem>();
-        particle.EffectName = EffectName;
+        particle.EffectName = ParticleEffectName;
         particle.StartActive = true;
         
         particle.DispatchSpawn();
@@ -88,7 +91,7 @@ public class BarrierNade(ISwiftlyCore core, RoundManager roundManager, Utils uti
         var directionVector = (playerPawn.AbsOrigin.Value - position).Normalized();
 
         bool onGround = playerPawn.GroundEntity.Value != null;
-        var zBoost = onGround ? 150f : 25f;
+        var zBoost = onGround ? HighZBoost : LowZBoost;
 
         Vector newVelocity = new Vector(
             playerPawn.AbsVelocity.X + directionVector.X * KnockbackDistance,
