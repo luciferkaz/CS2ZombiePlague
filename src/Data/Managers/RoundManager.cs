@@ -1,35 +1,39 @@
+using CS2ZombiePlague.Config;
 using CS2ZombiePlague.Data.Rounds;
+using Microsoft.Extensions.Options;
 using SwiftlyS2.Shared;
-using SwiftlyS2.Shared.SchemaDefinitions;
 
 namespace CS2ZombiePlague.Data.Managers;
 
-public class RoundManager(ISwiftlyCore core, IRoundFactory roundFactory)
+public class RoundManager(ISwiftlyCore core, IOptions<ZombiePlagueRoundConfig> roundConfig, IRoundFactory roundFactory) : IRoundManager
 {
-    private readonly Dictionary<RoundType, IRound> _rounds = new();
+    private readonly List<IRound> _rounds = [];
     private IRound? _currentRound;
 
     private CancellationTokenSource? _token;
     private const int RoundStartTime = 15;
 
-    private readonly Random _randomizer = new();
-
     public void RegisterRounds()
     {
-        Register(RoundType.None, roundFactory.Create(RoundType.None, this));
-        Register(RoundType.Infection, roundFactory.Create(RoundType.Infection, this));
-        Register(RoundType.Plague, roundFactory.Create(RoundType.Plague, this));
-        Register(RoundType.Nemesis, roundFactory.Create(RoundType.Nemesis, this));
+        _rounds.Clear();
+        
+        var config = roundConfig.Value;
+        var roundsToRegister = new IRoundConfig?[] { null, config.Infection, config.Plague, config.Nemesis }
+            .Where(round => round == null || round.Enable);
+        
+        foreach (var round in roundsToRegister)
+        {
+            var instance = round == null ? roundFactory.Create<None>(this) : roundFactory.Create(round, this);
+            if (!_rounds.Contains(instance))
+            {
+                _rounds.Add(instance);
+            }
+        }
     }
 
-    private void Register(RoundType roundType, IRound round)
+    public void SetRound(IRound round)
     {
-        _rounds.Add(roundType, round);
-    }
-
-    public void SetRound(RoundType roundType)
-    {
-        _currentRound = _rounds[roundType];
+        _currentRound = round;
     }
 
     public IRound? GetRound()
@@ -45,7 +49,7 @@ public class RoundManager(ISwiftlyCore core, IRoundFactory roundFactory)
 
     public bool IsNoneRound()
     {
-        return _currentRound == _rounds[RoundType.None];
+        return _currentRound is None;
     }
 
     public void Start()
@@ -58,7 +62,7 @@ public class RoundManager(ISwiftlyCore core, IRoundFactory roundFactory)
 
             if (localTime >= RoundStartTime)
             {
-                if (_currentRound == _rounds[RoundType.None])
+                if (_currentRound is None)
                 {
                     SetRound(RandomRound());
                 }
@@ -77,9 +81,9 @@ public class RoundManager(ISwiftlyCore core, IRoundFactory roundFactory)
         }
     }
 
-    private RoundType RandomRound()
+    private IRound RandomRound()
     {
-        var roundTypes = Enum.GetValues<RoundType>();
-        return roundTypes[_randomizer.Next(1, roundTypes.Length)];
+        var randomizer = new Random();
+        return _rounds[randomizer.Next(1, _rounds.Count)];
     }
 }

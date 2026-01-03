@@ -29,7 +29,7 @@ public class Nemesis(ISwiftlyCore core, RoundManager roundManager, ZombieManager
 
     public void End()
     {
-        roundManager.SetRound(RoundType.None);
+        roundManager.SetRound(new None());
 
         core.PlayerManager.SendCenter("Раунд окончен");
     }

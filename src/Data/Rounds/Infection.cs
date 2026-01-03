@@ -13,7 +13,7 @@ public class Infection(ISwiftlyCore core, RoundManager roundManager, ZombieManag
         core.Event.OnEntityTakeDamage -= TakeDamage;
         core.Event.OnClientDisconnected -= ClientDisconnected;
 
-        roundManager.SetRound(RoundType.None);
+        roundManager.SetRound(new None());
 
         core.PlayerManager.SendCenter("Раунд окончен");
     }

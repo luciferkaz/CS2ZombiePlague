@@ -13,7 +13,7 @@ public class Plague(ISwiftlyCore core, RoundManager roundManager, ZombieManager 
         core.Event.OnEntityTakeDamage -= TakeDamage;
         core.Event.OnClientDisconnected -= ClientDisconnected;
 
-        roundManager.SetRound(RoundType.None);
+        roundManager.SetRound(new None());
 
         core.PlayerManager.SendCenter("Раунд окончен");
     }

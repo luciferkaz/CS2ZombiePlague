@@ -1,7 +1,12 @@
-﻿using SwiftlyS2.Shared.Players;
+﻿namespace CS2ZombiePlague.Data.Classes;
 
-namespace CS2ZombiePlague.Data.Classes;
-
+/**
+ * 1. Клерик (хил)
+ * 2. Охотник (ставит ловушки)
+ * 3. Ассасин (ускоряется)
+ * 4. Толстый (ослепляет)
+ * 5. Шаман (кричит)
+ */
 public abstract class ZombieClass
 {
     public abstract string InternalName { get; }

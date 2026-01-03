@@ -1,6 +1,4 @@
-﻿using SwiftlyS2.Shared.Players;
-
-namespace CS2ZombiePlague.Data.Classes;
+﻿namespace CS2ZombiePlague.Data.Classes;
 
 public class ZombieHunter : ZombieClass
 {

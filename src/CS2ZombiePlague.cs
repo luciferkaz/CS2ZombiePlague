@@ -1,9 +1,11 @@
+using CS2ZombiePlague.Config;
 using CS2ZombiePlague.Data;
 using CS2ZombiePlague.Data.Extensions;
 using CS2ZombiePlague.Data.Managers;
 using CS2ZombiePlague.Data.Rounds;
 using CS2ZombiePlague.Data.Weapons;
 using CS2ZombiePlague.Di;
+using Microsoft.Extensions.Configuration;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Events;
 using SwiftlyS2.Shared.GameEventDefinitions;
@@ -26,78 +28,76 @@ namespace CS2ZombiePlague
         private readonly Lazy<Knockback> _knockback = new(DependencyManager.GetService<Knockback>);
         private readonly Lazy<Utils> _utils = new(DependencyManager.GetService<Utils>);
         
-
-        public override void Load(bool hotReload)
+    public override void Load(bool hotReload)
+    {
+        if (hotReload)
         {
-            if (hotReload)
-            {
-                DependencyManager.Dispose();
-            }
-            
-            DependencyManager.Load(Core);
-
-            _roundManager.Value.RegisterRounds();
-            _weaponManager.Value.RegisterWeapons();
-            _knockback.Value.Start();
-            
-            Core.GameEvent.HookPost<EventRoundStart>(OnRoundStart);
-            Core.GameEvent.HookPost<EventRoundEnd>(OnRoundEnd);
-            
-        }
-        
-        public override void Unload()
-        {
+            DependencyManager.Dispose();
         }
 
-        private HookResult OnRoundStart(EventRoundStart @event)
+        DependencyManager.Load(Core);
+
+        _roundManager.Value.RegisterRounds();
+        _weaponManager.Value.RegisterWeapons();
+        _knockback.Value.Start();
+
+        Core.GameEvent.HookPost<EventRoundStart>(OnRoundStart);
+        Core.GameEvent.HookPost<EventRoundEnd>(OnRoundEnd);
+    }
+
+    public override void Unload()
+    {
+    }
+
+    private HookResult OnRoundStart(EventRoundStart @event)
+    {
+        var zombieManager = _zombieManager.Value;
+        var roundManager = _roundManager.Value;
+        var utils = _utils.Value;
+
+        zombieManager.RemoveAll();
+        roundManager.CancelToken();
+        utils.MoveAllPlayersToTeam(Team.CT);
+        utils.AllResetRenderColor();
+
+        roundManager.SetRound(new None());
+
+        if (roundManager.RoundIsAvailable())
         {
-            var zombieManager = _zombieManager.Value;
-            var roundManager = _roundManager.Value;
-            var utils = _utils.Value;
-            
-            zombieManager.RemoveAll();
-            roundManager.CancelToken();
-            utils.MoveAllPlayersToTeam(Team.CT);
-            utils.AllResetRenderColor();
-            
-            roundManager.SetRound(RoundType.None);
-            
-            if (roundManager.RoundIsAvailable())
-            {
-                roundManager.Start();
-            }
-            
+            roundManager.Start();
+        }
+
+        return HookResult.Continue;
+    }
+
+    [GameEventHandler(HookMode.Pre)]
+    private HookResult OnPlayerHurt(EventPlayerHurt @event)
+    {
+        var roundManager = _roundManager.Value;
+        var victim = Core.PlayerManager.GetPlayer(@event.UserId);
+        if (victim == null)
+        {
             return HookResult.Continue;
         }
 
-        [GameEventHandler(HookMode.Pre)]
-        private HookResult OnPlayerHurt(EventPlayerHurt @event)
+        if (roundManager.IsNoneRound())
         {
-            var roundManager = _roundManager.Value;
-            var victim = Core.PlayerManager.GetPlayer(@event.UserId);
-            if (victim == null)
-            {
-                return HookResult.Continue;
-            }
-
-            if (roundManager.IsNoneRound())
-            {
-                victim.SetHealth(victim.PlayerPawn.Health + @event.DmgHealth);
-            }
-
-            return HookResult.Continue;
+            victim.SetHealth(victim.PlayerPawn.Health + @event.DmgHealth);
         }
 
-        private HookResult OnRoundEnd(EventRoundEnd @event)
-        {
-            var roundManager = _roundManager.Value;
-            if (roundManager.GetRound() != null)
-            {
-                roundManager.GetRound()?.End();
-            }
+        return HookResult.Continue;
+    }
 
-            return HookResult.Continue;
+    private HookResult OnRoundEnd(EventRoundEnd @event)
+    {
+        var roundManager = _roundManager.Value;
+        if (roundManager.GetRound() != null)
+        {
+            roundManager.GetRound()?.End();
         }
+
+        return HookResult.Continue;
+    }
 
         [EventListener<EventDelegates.OnPrecacheResource>]
         private void OnPrecacheResource(IOnPrecacheResourceEvent @event)

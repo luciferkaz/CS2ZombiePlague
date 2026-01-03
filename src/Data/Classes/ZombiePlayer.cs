@@ -1,6 +1,5 @@
 ﻿using CS2ZombiePlague.Data.Extensions;
 using CS2ZombiePlague.Data.Managers;
-using SwiftlyS2.Shared.Natives;
 using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.Data.Classes;
