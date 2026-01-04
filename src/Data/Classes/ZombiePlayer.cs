@@ -39,7 +39,7 @@ public class ZombiePlayer
         return _zombieClass;
     }
 
-    private void Initialize(IPlayer player, ZombieClass zombieClass)
+    public void Initialize(IPlayer player, ZombieClass zombieClass)
     {
         player.SetHealth(zombieClass.Health);
         player.SetSpeed(zombieClass.Speed);

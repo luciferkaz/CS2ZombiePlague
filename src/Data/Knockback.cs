@@ -70,7 +70,7 @@ public class Knockback(ISwiftlyCore core, ZombieManager zombieManager)
 
         var weaponName = $"weapon_{@event.Weapon}";
 
-        if (_weaponKnockback[weaponName] == null)
+        if (!_weaponKnockback.ContainsKey(weaponName))
         {
             return  HookResult.Continue;
         }

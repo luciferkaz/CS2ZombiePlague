@@ -5,7 +5,8 @@ using SwiftlyS2.Shared;
 
 namespace CS2ZombiePlague.Data.Managers;
 
-public class RoundManager(ISwiftlyCore core, IOptions<ZombiePlagueRoundConfig> roundConfig, IRoundFactory roundFactory) : IRoundManager
+public class RoundManager(ISwiftlyCore core, IOptions<ZombiePlagueRoundConfig> roundConfig, IRoundFactory roundFactory)
+    : IRoundManager
 {
     private readonly List<IRound> _rounds = [];
     private IRound? _currentRound;
@@ -16,14 +17,14 @@ public class RoundManager(ISwiftlyCore core, IOptions<ZombiePlagueRoundConfig> r
     public void RegisterRounds()
     {
         _rounds.Clear();
-        
+
         var config = roundConfig.Value;
         var roundsToRegister = new IRoundConfig?[] { null, config.Infection, config.Plague, config.Nemesis }
             .Where(round => round == null || round.Enable);
-        
+
         foreach (var round in roundsToRegister)
         {
-            var instance = round == null ? roundFactory.Create<None>(this) : roundFactory.Create(round, this);
+            var instance = round == null ? roundFactory.Create(null, this) : roundFactory.Create(round, this);
             if (!_rounds.Contains(instance))
             {
                 _rounds.Add(instance);

@@ -8,12 +8,12 @@ namespace CS2ZombiePlague.Data.Extensions;
 
 public static class PlayerExtensions
 {
-    public static void SetHealth(this IPlayer player, int health)
+    public static void SetHealth(this IPlayer player, float health)
     {
         var playerPawn = player.PlayerPawn;
         if (playerPawn == null || playerPawn.Health <= 0) return;
 
-        playerPawn.Health = health;
+        playerPawn.Health = (int)health;
         playerPawn.HealthUpdated();
     }
 
@@ -60,9 +60,11 @@ public static class PlayerExtensions
         var pawn = player.Pawn;
         if (pawn == null || !player.Controller.PawnIsAlive) return;
         
+        pawn.SetModel(modelPath);
+        
         DependencyManager.GetService<ISwiftlyCore>().Scheduler.NextTick(() =>
         {
-            pawn.SetModel(modelPath);
+            pawn.CBodyComponent!.SceneNode!.GetSkeletonInstance().ModelState.IdealMotionTypeUpdated();
         });
     }
 

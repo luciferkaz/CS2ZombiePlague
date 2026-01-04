@@ -22,7 +22,7 @@ public class BarrierNade(ISwiftlyCore core, RoundManager roundManager, Utils uti
     private const float StartTime = 0f;
     private const float HighZBoost = 150f;
     private const float LowZBoost = 25f;
-    
+
     private const string ParticleEffectName = "particles/kolka/part11.vpcf";
 
     public void Load()
@@ -37,7 +37,7 @@ public class BarrierNade(ISwiftlyCore core, RoundManager roundManager, Utils uti
         var particle = core.EntitySystem.CreateEntity<CParticleSystem>();
         particle.EffectName = ParticleEffectName;
         particle.StartActive = true;
-        
+
         particle.DispatchSpawn();
         particle.Teleport(position, null, null);
 

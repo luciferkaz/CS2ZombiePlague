@@ -1,11 +1,16 @@
-﻿using CS2ZombiePlague.Data.Extensions;
+﻿using CS2ZombiePlague.Config;
+using CS2ZombiePlague.Data.Extensions;
 using CS2ZombiePlague.Data.Managers;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.Data.Rounds;
 
-public class Nemesis(ISwiftlyCore core, RoundManager roundManager, ZombieManager zombieManager) : IRound
+public class Nemesis(
+    ISwiftlyCore core,
+    RoundManager roundManager,
+    ZombieManager zombieManager,
+    NemesisRoundConfig config) : IRound
 {
     public void Start()
     {
@@ -40,6 +45,6 @@ public class Nemesis(ISwiftlyCore core, RoundManager roundManager, ZombieManager
         var zombieClass = zombieNemesis.GetZombieClass();
         var countPlayers = core.PlayerManager.GetAllPlayers().Count();
 
-        nemesis.SetHealth(zombieClass.Health * countPlayers);
+        nemesis.SetHealth(zombieClass.Health + (config.NemesisBonusHealthPerPlayer * countPlayers));
     }
 }

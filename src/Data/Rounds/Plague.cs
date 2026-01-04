@@ -1,17 +1,31 @@
-﻿using CS2ZombiePlague.Data.Extensions;
+﻿using CS2ZombiePlague.Config;
+using CS2ZombiePlague.Data.Extensions;
 using CS2ZombiePlague.Data.Managers;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Events;
+using SwiftlyS2.Shared.GameEventDefinitions;
+using SwiftlyS2.Shared.Misc;
 using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.Data.Rounds;
 
-public class Plague(ISwiftlyCore core, RoundManager roundManager, ZombieManager zombieManager, Utils utils) : IRound
+public class Plague(
+    ISwiftlyCore core,
+    RoundManager roundManager,
+    ZombieManager zombieManager,
+    Utils utils,
+    PlagueRoundConfig config) : IRound
 {
+    private Guid _playerDeathEvent = Guid.Empty;
+
     public void End()
     {
         core.Event.OnEntityTakeDamage -= TakeDamage;
-        core.Event.OnClientDisconnected -= ClientDisconnected;
+
+        if (config.ZombieRespawn)
+        {
+            core.GameEvent.Unhook(_playerDeathEvent);
+        }
 
         roundManager.SetRound(new None());
 
@@ -21,10 +35,14 @@ public class Plague(ISwiftlyCore core, RoundManager roundManager, ZombieManager 
     public void Start()
     {
         core.Event.OnEntityTakeDamage += TakeDamage;
-        core.Event.OnClientDisconnected += ClientDisconnected;
+
+        if (config.ZombieRespawn)
+        {
+            _playerDeathEvent = core.GameEvent.HookPre<EventPlayerDeath>(EventPlayerDeath);
+        }
 
         var players = core.PlayerManager.GetAllPlayers().ToList();
-        var countZombies = Math.Ceiling(players.Count * 0.3);
+        var countZombies = Math.Ceiling(players.Count * config.ZombieSpawnRatio);
         players.Shuffle();
 
         foreach (var player in players)
@@ -63,25 +81,29 @@ public class Plague(ISwiftlyCore core, RoundManager roundManager, ZombieManager 
             var zombie = zombieManager.GetZombie(attacker.PlayerID);
             if (!zombie.Infect(victim))
             {
-                victim.SetArmor(victim.PlayerPawn.ArmorValue - (int)@event.Info.Damage);
-
                 if (!victim.IsLastHuman())
                 {
-                    victim.PlayerPawn?.Health = victim.PlayerPawn.Health + (int)@event.Info.Damage;
+                    victim.SetArmor(victim.PlayerPawn.ArmorValue - (int)@event.Info.Damage);
+                    victim.SetHealth(victim.PlayerPawn.Health + (int)@event.Info.Damage);
                 }
             }
         }
     }
 
-    private void ClientDisconnected(IOnClientDisconnectedEvent @event)
+    private HookResult EventPlayerDeath(EventPlayerDeath @event)
     {
-        var player = core.PlayerManager.GetPlayer(@event.PlayerId);
-        if (player.IsInfected() && zombieManager.GetAllZombies().Count == 1)
+        var player = @event.UserIdPlayer;
+        core.Scheduler.DelayBySeconds(3, () =>
         {
-            var players = core.PlayerManager.GetAllPlayers().ToList();
-            var newZombie = players[Random.Shared.Next(0, players.Count)];
+            if (player != null && player.IsValid && player.IsInfected() && roundManager.GetRound() == this)
+            {
+                player.Controller.Respawn();
 
-            zombieManager.CreateZombie(newZombie);
-        }
+                var zombie = zombieManager.GetZombie(player.PlayerID);
+                zombie.Initialize(player, zombie.GetZombieClass());
+            }
+        });
+
+        return HookResult.Continue;
     }
 }
