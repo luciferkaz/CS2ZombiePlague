@@ -70,11 +70,10 @@ public class Infection(
             var zombie = zombieManager.GetZombie(attacker.PlayerID);
             if (!zombie.Infect(victim))
             {
-                victim.SetArmor(victim.PlayerPawn.ArmorValue - (int)@event.Info.Damage);
-
                 if (!victim.IsLastHuman())
                 {
-                    victim.PlayerPawn?.Health = victim.PlayerPawn.Health + (int)@event.Info.Damage;
+                    victim.SetArmor(victim.PlayerPawn.ArmorValue - (int)@event.Info.Damage);
+                    victim.SetHealth(victim.PlayerPawn.Health + (int)@event.Info.Damage);
                 }
             }
         }

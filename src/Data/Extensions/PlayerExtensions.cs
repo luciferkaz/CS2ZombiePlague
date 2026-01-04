@@ -60,9 +60,11 @@ public static class PlayerExtensions
         var pawn = player.Pawn;
         if (pawn == null || !player.Controller.PawnIsAlive) return;
         
+        pawn.SetModel(modelPath);
+        
         DependencyManager.GetService<ISwiftlyCore>().Scheduler.NextTick(() =>
         {
-            pawn.SetModel(modelPath);
+            pawn.CBodyComponent!.SceneNode!.GetSkeletonInstance().ModelState.IdealMotionTypeUpdated();
         });
     }
 
