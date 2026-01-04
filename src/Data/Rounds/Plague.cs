@@ -22,7 +22,7 @@ public class Plague(
     {
         core.Event.OnEntityTakeDamage -= TakeDamage;
 
-        if (config.ZombieRespawn)
+        if (config.ZombieRevived)
         {
             core.GameEvent.Unhook(_playerDeathEvent);
         }
@@ -36,7 +36,7 @@ public class Plague(
     {
         core.Event.OnEntityTakeDamage += TakeDamage;
 
-        if (config.ZombieRespawn)
+        if (config.ZombieRevived)
         {
             _playerDeathEvent = core.GameEvent.HookPre<EventPlayerDeath>(EventPlayerDeath);
         }
@@ -93,7 +93,7 @@ public class Plague(
     private HookResult EventPlayerDeath(EventPlayerDeath @event)
     {
         var player = @event.UserIdPlayer;
-        core.Scheduler.DelayBySeconds(3, () =>
+        core.Scheduler.DelayBySeconds(config.ZombieSpawnTime, () =>
         {
             if (player != null && player.IsValid && player.IsInfected() && roundManager.GetRound() == this)
             {

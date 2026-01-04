@@ -10,16 +10,18 @@ public sealed class ZombiePlagueRoundConfig
 public class InfectionRoundConfig : IRoundConfig
 {
     public bool Enable { get; set; } = true;
-    public bool ZombieRespawn { get; set; } = true;
+    public bool ZombieRevived { get; set; } = true;
     public bool FirstZombieLeap { get; set; } = true;
     public float FirstZombieHealthRatio { get; set; } = 1.0f;
+    public float ZombieSpawnTime { get; set; } = 5.0f;
 }
 
 public class PlagueRoundConfig : IRoundConfig
 {
     public bool Enable { get; set; } = true;
-    public bool ZombieRespawn { get; set; } = true;
+    public bool ZombieRevived { get; set; } = true;
     public float ZombieSpawnRatio { get; set; } = 0.3f;
+    public float ZombieSpawnTime { get; set; } = 5.0f;
 }
 
 public class NemesisRoundConfig : IRoundConfig
