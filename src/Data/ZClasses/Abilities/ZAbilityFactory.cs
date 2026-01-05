@@ -1,15 +1,17 @@
-﻿using SwiftlyS2.Shared;
-using SwiftlyS2.Shared.Players;
+﻿using CS2ZombiePlague.Data.Managers;
+using SwiftlyS2.Shared;
 
 namespace CS2ZombiePlague.Data.ZClasses.Abilities;
 
-public class ZAbilityFactory(ISwiftlyCore core, Utils utils) : IZAbilityFactory
+public class ZAbilityFactory(ISwiftlyCore core, ZombieManager zombiemanager, Utils utils) : IZAbilityFactory
 {
     public IZAbility Create<T>() where T : IZAbility
     {
         return typeof(T) switch
         {
             var t when t == typeof(Heal) => new Heal(core, utils),
+            var t when t == typeof(Leap) => new Leap(core, utils),
+            var t when t == typeof(Charge) => new Charge(core, zombiemanager),
             _ => throw new NotSupportedException("ZAbilityFactory: type T hasn't supported!")
         };
     }

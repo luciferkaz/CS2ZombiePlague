@@ -64,8 +64,10 @@ public static class PlayerExtensions
         
         DependencyManager.GetService<ISwiftlyCore>().Scheduler.NextTick(() =>
         {
-            pawn.CBodyComponent!.SceneNode!.GetSkeletonInstance().ModelState.IdealMotionTypeUpdated();
+            pawn.CBodyComponent.SceneNode.GetSkeletonInstance().IsAnimationEnabledUpdated();
+            pawn.CBodyComponent.SceneNode.GetSkeletonInstance().ModelState.ModelUpdated();
         });
+
     }
 
     public static bool IsInfected(this IPlayer player)

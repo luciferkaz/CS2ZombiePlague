@@ -2,7 +2,6 @@ using CS2ZombiePlague.Data;
 using CS2ZombiePlague.Data.Extensions;
 using CS2ZombiePlague.Data.Managers;
 using CS2ZombiePlague.Data.Rounds;
-using CS2ZombiePlague.Data.Weapons;
 using CS2ZombiePlague.Di;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Events;
@@ -78,7 +77,7 @@ namespace CS2ZombiePlague
 
             if (roundManager.IsNoneRound())
             {
-                victim.SetHealth(victim.PlayerPawn.Health + @event.DmgHealth);
+                return HookResult.Stop;
             }
 
             return HookResult.Continue;
@@ -99,6 +98,7 @@ namespace CS2ZombiePlague
         private void OnPrecacheResource(IOnPrecacheResourceEvent @event)
         {
             @event.AddItem("characters/models/s2ze/zombie_frozen/zombie_frozen.vmdl");
+            @event.AddItem("characters/models/kolka/2025/lurker/lurker.vmdl");
             @event.AddItem("particles/kolka/part1.vpcf");
             @event.AddItem("particles/kolka/part2.vpcf");
             @event.AddItem("particles/kolka/part3.vpcf");

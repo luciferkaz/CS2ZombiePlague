@@ -73,7 +73,7 @@ public class Infection(
                 if (!victim.IsLastHuman())
                 {
                     victim.SetArmor(victim.PlayerPawn.ArmorValue - (int)@event.Info.Damage);
-                    victim.SetHealth(victim.PlayerPawn.Health + (int)@event.Info.Damage);
+                    @event.Info.Damage = 0;
                 }
             }
         }

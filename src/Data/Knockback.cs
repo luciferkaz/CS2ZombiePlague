@@ -13,13 +13,13 @@ public class Knockback(ISwiftlyCore core, ZombieManager zombieManager)
 
     private readonly Dictionary<string, KnockbackData> _weaponKnockback = new()
     {
-        { "weapon_glock", new KnockbackData(150.0f, 100.0f) },
-        { "weapon_usp_silencer", new KnockbackData(160.0f, 100.0f) },
-        { "weapon_hkp2000", new KnockbackData(200.0f, 100.0f) },
-        { "weapon_elite", new KnockbackData(225.0f, 100.0f) },
+        { "weapon_glock", new KnockbackData(150.0f, 125.0f) },
+        { "weapon_usp_silencer", new KnockbackData(160.0f, 125.0f) },
+        { "weapon_hkp2000", new KnockbackData(200.0f, 125.0f) },
+        { "weapon_elite", new KnockbackData(225.0f, 125.0f) },
         { "weapon_p250", new KnockbackData(225.0f, 100.0f) },
         { "weapon_fiveseven", new KnockbackData(225.0f, 100.0f) },
-        { "weapon_cz75a", new KnockbackData(240.0f, 100.0f) },
+        { "weapon_cz75a", new KnockbackData(270.0f, 100.0f) },
         { "weapon_deagle", new KnockbackData(900.0f, 75.0f) },
         { "weapon_revolver", new KnockbackData(900.0f, 125.0f) },
         { "weapon_nova", new KnockbackData(750.0f, 75.0f) },
@@ -91,8 +91,8 @@ public class Knockback(ISwiftlyCore core, ZombieManager zombieManager)
         var zBoost = onGround ? 150f : 25f;
 
         Vector newVelocity = new Vector(
-            victim.PlayerPawn.AbsVelocity.X + directionVector.X * recoil * zombieKnockback,
-            victim.PlayerPawn.AbsVelocity.Y + directionVector.Y * recoil * zombieKnockback,
+            directionVector.X * recoil * zombieKnockback,
+            directionVector.Y * recoil * zombieKnockback,
             zBoost
         );
 

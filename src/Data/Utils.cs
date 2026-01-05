@@ -1,5 +1,4 @@
-﻿using System.Numerics;
-using SwiftlyS2.Shared;
+﻿using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Natives;
 using SwiftlyS2.Shared.Players;
 using SwiftlyS2.Shared.SchemaDefinitions;
@@ -67,6 +66,7 @@ public class Utils(ISwiftlyCore core)
             if (player != null && player.IsValid)
             {
                 player.PlayerPawn.Render = new Color(255, 255, 255);
+                player.PlayerPawn.AnimatedEveryTickUpdated();
             }
         }
     }
