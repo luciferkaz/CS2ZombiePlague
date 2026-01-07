@@ -13,6 +13,8 @@ public static class PlayerExtensions
         var playerPawn = player.PlayerPawn;
         if (playerPawn == null || playerPawn.Health <= 0) return;
 
+        playerPawn.MaxHealth = health;
+        playerPawn.MaxHealthUpdated();
         playerPawn.Health = health;
         playerPawn.HealthUpdated();
     }
@@ -57,14 +59,14 @@ public static class PlayerExtensions
 
     public static void SetModel(this IPlayer player, string modelPath)
     {
-        var pawn = player.Pawn;
+        var pawn = player.PlayerPawn;
         if (pawn == null || !player.Controller.PawnIsAlive) return;
         
-        pawn.SetModel(modelPath);
-        
-        DependencyManager.GetService<ISwiftlyCore>().Scheduler.NextTick(() =>
+        DependencyManager.GetService<ISwiftlyCore>().Scheduler.NextWorldUpdate(() =>
         {
-            pawn.CBodyComponent!.SceneNode!.GetSkeletonInstance().ModelState.IdealMotionTypeUpdated();
+            pawn.SetModel(modelPath);
+            pawn.GroundEntity.Value = null;
+            pawn.GroundEntityUpdated();
         });
     }
 

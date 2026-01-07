@@ -32,6 +32,7 @@ public class ZombieManager(IZombiePlayerFactory zombiePlayerFactory, ISwiftlyCor
                 @event.Attacker = attackerId;
                 @event.Weapon = "knife";
                 @event.Headshot = false;
+                @event.Assister = -1;
 
                 core.PlayerManager.GetPlayer(@event.Attacker).Controller.Score++;
                 core.PlayerManager.GetPlayer(@event.Attacker).Controller.ScoreUpdated();
