@@ -1,7 +1,5 @@
 ﻿using CS2ZombiePlague.Data.Extensions;
 using CS2ZombiePlague.Data.Managers;
-using CS2ZombiePlague.Data.ZClasses.Abilities;
-using CS2ZombiePlague.Di;
 using SwiftlyS2.Shared.Players;
 
 namespace CS2ZombiePlague.Data.ZClasses;
@@ -49,15 +47,15 @@ public class ZombiePlayer
         _player.SetModel(_zombieClass.Model);
         
         _zombieClass.Abilities.ForEach(zClass=>zClass.SetCaster(_player));
-
+        
+        _player.SwitchTeam(Team.T);
+        
         var itemServices = _player.PlayerPawn?.ItemServices;
         if (itemServices != null)
         {
             itemServices.RemoveItems();
-            itemServices.GiveItem("weapon_knife");
+            itemServices.GiveItem("weapon_knife_t");
         }
-
-        _player.SwitchTeam(Team.T);
     }
 
     public void UnHookAbilities()

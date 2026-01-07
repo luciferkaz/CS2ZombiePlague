@@ -20,6 +20,7 @@ namespace CS2ZombiePlague
         private readonly Lazy<RoundManager> _roundManager = new(DependencyManager.GetService<RoundManager>);
         private readonly Lazy<ZombieManager> _zombieManager = new(DependencyManager.GetService<ZombieManager>);
         private readonly Lazy<WeaponManager> _weaponManager = new(DependencyManager.GetService<WeaponManager>);
+        private readonly Lazy<KnifeManager> _knifeManager = new(DependencyManager.GetService<KnifeManager>);
         private readonly Lazy<Knockback> _knockback = new(DependencyManager.GetService<Knockback>);
         private readonly Lazy<Utils> _utils = new(DependencyManager.GetService<Utils>);
 
@@ -34,6 +35,7 @@ namespace CS2ZombiePlague
 
             _roundManager.Value.RegisterRounds();
             _weaponManager.Value.RegisterWeapons();
+            _knifeManager.Value.RegisterHooks();
             _knockback.Value.Start();
 
             Core.GameEvent.HookPost<EventRoundStart>(OnRoundStart);
@@ -98,7 +100,12 @@ namespace CS2ZombiePlague
         private void OnPrecacheResource(IOnPrecacheResourceEvent @event)
         {
             @event.AddItem("characters/models/s2ze/zombie_frozen/zombie_frozen.vmdl");
+            @event.AddItem("characters/models/kolka/2025/bull/bull.vmdl");
+            @event.AddItem("characters/models/kolka/2025/hazmat/hazmat.vmdl");
             @event.AddItem("characters/models/kolka/2025/lurker/lurker.vmdl");
+            @event.AddItem("weapons/nozb1/valogun/knife/sovereign_tactical/sovereign_tactical_ag2.vmdl");
+            @event.AddItem("weapons/nozb1/valogun/knife/ejderbicak_cord/ejderbicak_cord_ag2.vmdl");
+            @event.AddItem("weapons/nozb1/valogun/knife/ashen_kukri/ashen_kukri_ag2.vmdl");
             @event.AddItem("particles/kolka/part1.vpcf");
             @event.AddItem("particles/kolka/part2.vpcf");
             @event.AddItem("particles/kolka/part3.vpcf");

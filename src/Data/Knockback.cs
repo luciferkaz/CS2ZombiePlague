@@ -7,7 +7,7 @@ using SwiftlyS2.Shared.Natives;
 
 namespace CS2ZombiePlague.Data;
 
-public class Knockback(ISwiftlyCore core, ZombieManager zombieManager)
+public class Knockback(ISwiftlyCore core, ZombieManager zombieManager, KnifeManager knifeManager)
 {
     private record KnockbackData(float Recoil, float PickDistance);
 
@@ -46,7 +46,7 @@ public class Knockback(ISwiftlyCore core, ZombieManager zombieManager)
         { "weapon_awp", new KnockbackData(1200.0f, 400.0f) },
         { "weapon_g3sg1", new KnockbackData(300.0f, 150.0f) },
         { "weapon_scar20", new KnockbackData(300.0f, 150.0f) },
-        { "weapon_knife", new KnockbackData(1200.0f, 25.0f) },
+        { "weapon_knife", new KnockbackData(450.0f, 25.0f) },
     };
 
     public void Start()
@@ -69,10 +69,18 @@ public class Knockback(ISwiftlyCore core, ZombieManager zombieManager)
         }
 
         var weaponName = $"weapon_{@event.Weapon}";
-
+        
         if (!_weaponKnockback.ContainsKey(weaponName))
         {
             return  HookResult.Continue;
+        }
+        
+        var weaponKnockback = _weaponKnockback[weaponName].Recoil;
+        var weaponPickDistance = _weaponKnockback[weaponName].PickDistance;
+
+        if (weaponName == "weapon_knife")
+        {
+            weaponKnockback = knifeManager.GetPlayerKnife(attacker.PlayerID).Knockback;
         }
 
         var victimOrigin = victim.Pawn!.AbsOrigin.Value;
@@ -81,8 +89,8 @@ public class Knockback(ISwiftlyCore core, ZombieManager zombieManager)
         var directionVector = (victimOrigin - attackerOrigin)!.Normalized();
         var distance = GetDistance(victimOrigin, attackerOrigin);
 
-        float recoil = GetGunRecoil(distance, _weaponKnockback[weaponName].Recoil,
-            _weaponKnockback[weaponName].PickDistance);
+        float recoil = GetGunRecoil(distance, weaponKnockback,
+            weaponPickDistance);
 
         var zombie = zombieManager.GetZombie(victim.PlayerID);
         var zombieKnockback = zombie.GetZombieClass().Knockback;
