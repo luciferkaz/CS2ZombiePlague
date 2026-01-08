@@ -161,8 +161,7 @@ public class KnifeManager(
 
                 weapon.SetModel(GetPlayerKnife(player.PlayerID).Model);
                 pawn.WeaponServices.SelectWeapon(weapon);
-
-                player.SendChat("Нож успешно выбран!");
+                
                 break;
             }
         });

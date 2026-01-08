@@ -16,10 +16,6 @@ public class DamageNotify(ISwiftlyCore core, IOptions<ZombiePlagueCoreConfig> co
 
     private HookResult OnPlayerHurtPost(EventPlayerHurt @event)
     {
-        if (!config.Value.DamageNotifyEnabled)
-        {
-            return HookResult.Continue;
-        }
 
         var player = @event.AttackerPlayer;
         var victimPawn = @event.UserIdPawn;

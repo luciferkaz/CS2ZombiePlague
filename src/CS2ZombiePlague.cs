@@ -1,8 +1,10 @@
+using CS2ZombiePlague.Config;
 using CS2ZombiePlague.Data;
 using CS2ZombiePlague.Data.Extensions;
 using CS2ZombiePlague.Data.Managers;
 using CS2ZombiePlague.Data.Rounds;
 using CS2ZombiePlague.Di;
+using Microsoft.Extensions.Options;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Events;
 using SwiftlyS2.Shared.GameEventDefinitions;
@@ -24,7 +26,7 @@ namespace CS2ZombiePlague
         private readonly Lazy<Knockback> _knockback = new(DependencyManager.GetService<Knockback>);
         private readonly Lazy<DamageNotify> _damageNotify = new(DependencyManager.GetService<DamageNotify>);
         private readonly Lazy<Utils> _utils = new(DependencyManager.GetService<Utils>);
-
+        
         public override void Load(bool hotReload)
         {
             if (hotReload)
@@ -37,10 +39,17 @@ namespace CS2ZombiePlague
             _roundManager.Value.RegisterRounds();
             _weaponManager.Value.RegisterWeapons();
             _knifeManager.Value.RegisterHooks();
-            _knockback.Value.Start();
-            _damageNotify.Value.Start();
-
-
+            
+            var config = DependencyManager.GetService<IOptions<ZombiePlagueCoreConfig>>().Value;
+            if (config.DamageNotifyEnabled)
+            {
+                _damageNotify.Value.Start();
+            }
+            if (config.KnockbackEnabled)
+            {
+                _knockback.Value.Start();
+            }
+            
             Core.GameEvent.HookPost<EventRoundStart>(OnRoundStart);
             Core.GameEvent.HookPost<EventRoundEnd>(OnRoundEnd);
         }
