@@ -5,19 +5,21 @@ using SwiftlyS2.Shared;
 
 namespace CS2ZombiePlague.Data.Managers;
 
-public class RoundManager(ISwiftlyCore core, IOptions<RoundConfig> roundConfig, IRoundFactory roundFactory)
+public class RoundManager(ISwiftlyCore core, IOptions<RoundConfig> roundConfig, IOptions<ZombiePlagueCoreConfig> coreConfig, IRoundFactory roundFactory)
     : IRoundManager
 {
     private readonly List<IRound> _rounds = [];
     private IRound? _currentRound;
 
     private CancellationTokenSource? _token;
-    private const int RoundStartTime = 15;
+    private int _roundStartTime;
 
     public void RegisterRounds()
     {
+        _roundStartTime = coreConfig.Value.PreStartDelay;
+        
         _rounds.Clear();
-
+        
         var config = roundConfig.Value;
         var roundsToRegister = new IRoundConfig?[] { null, config.Infection, config.Plague, config.Nemesis }
             .Where(round => round == null || round.Enable);
@@ -64,9 +66,9 @@ public class RoundManager(ISwiftlyCore core, IOptions<RoundConfig> roundConfig, 
         _token = core.Scheduler.RepeatBySeconds(1, () =>
         {
             localTime += 1;
-            core.PlayerManager.SendCenter("До заражения " + (RoundStartTime - localTime) + " секунд");
+            core.PlayerManager.SendCenter("До заражения " + (_roundStartTime - localTime) + " секунд");
 
-            if (localTime >= RoundStartTime)
+            if (localTime >= _roundStartTime)
             {
                 if (_currentRound is None)
                 {

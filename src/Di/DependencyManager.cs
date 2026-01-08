@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using CS2ZombiePlague.Config;
-using CS2ZombiePlague.Config.Weapon;
 using CS2ZombiePlague.Config.Ability;
+using CS2ZombiePlague.Config.Weapon;
 using CS2ZombiePlague.Config.Zombie;
 using CS2ZombiePlague.Data;
 using CS2ZombiePlague.Data.Managers;
@@ -69,6 +69,7 @@ public static class DependencyManager
             .AddSingleton<Knockback>()
             .AddSingleton<WeaponManager>()
             .AddSingleton<DamageNotify>()
+            .AddSingleton<MoneySystem>()
             .AddSingleton<Utils>();
         
         _services

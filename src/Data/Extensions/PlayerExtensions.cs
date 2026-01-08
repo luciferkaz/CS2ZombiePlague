@@ -1,6 +1,5 @@
 ﻿using CS2ZombiePlague.Data.Managers;
 using CS2ZombiePlague.Di;
-using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Players;
 using SwiftlyS2.Shared.SchemaDefinitions;
 
@@ -60,14 +59,11 @@ public static class PlayerExtensions
     public static void SetModel(this IPlayer player, string modelPath)
     {
         if (player.PlayerPawn == null || !player.Controller.PawnIsAlive) return;
-        
-        DependencyManager.GetService<ISwiftlyCore>().Scheduler.NextWorldUpdate(() =>
-        {
-            var pawn = player.PlayerPawn;
-            pawn.SetModel(modelPath);
-            pawn.GroundEntity.Value = null;
-            pawn.GroundEntityUpdated();
-        });
+
+        var pawn = player.PlayerPawn;
+        pawn.SetModel(modelPath);
+        pawn.GroundEntity.Value = null;
+        pawn.GroundEntityUpdated();
     }
 
     public static bool IsInfected(this IPlayer player)
@@ -91,7 +87,7 @@ public static class PlayerExtensions
     {
         return !player.IsInfected() && DependencyManager.GetService<HumanManager>().GetCountHumans() == 1;
     }
-    
+
     public static bool IsFrozen(this IPlayer player)
     {
         return player.PlayerPawn != null && (player.PlayerPawn.MoveType == MoveType_t.MOVETYPE_FLY ? true : false);

@@ -25,6 +25,7 @@ namespace CS2ZombiePlague
         private readonly Lazy<KnifeManager> _knifeManager = new(DependencyManager.GetService<KnifeManager>);
         private readonly Lazy<Knockback> _knockback = new(DependencyManager.GetService<Knockback>);
         private readonly Lazy<DamageNotify> _damageNotify = new(DependencyManager.GetService<DamageNotify>);
+        private readonly Lazy<MoneySystem> _moneySystem = new(DependencyManager.GetService<MoneySystem>);
         private readonly Lazy<Utils> _utils = new(DependencyManager.GetService<Utils>);
         
         public override void Load(bool hotReload)
@@ -48,6 +49,10 @@ namespace CS2ZombiePlague
             if (config.KnockbackEnabled)
             {
                 _knockback.Value.Start();
+            }
+            if (config.MoneySystemEnabled)
+            {
+                _moneySystem.Value.Start();
             }
             
             Core.GameEvent.HookPost<EventRoundStart>(OnRoundStart);
@@ -112,6 +117,10 @@ namespace CS2ZombiePlague
         [EventListener<EventDelegates.OnPrecacheResource>]
         private void OnPrecacheResource(IOnPrecacheResourceEvent @event)
         {
+            @event.AddItem("sounds/weapons/frostnade/frostnade_detonate.vsnd");
+            @event.AddItem("sounds/weapons/frostnade/frostnade_hit.vsnd");
+            @event.AddItem("sounds/weapons/frostnade/frostnade_end.vsnd");
+            @event.AddItem("sounds/countdown/countdown.vsnd");
             @event.AddItem("characters/models/s2ze/zombie_frozen/zombie_frozen.vmdl");
             @event.AddItem("characters/models/kolka/2025/bull/bull.vmdl");
             @event.AddItem("characters/models/kolka/2025/hazmat/hazmat.vmdl");
