@@ -1,13 +1,13 @@
 ﻿namespace CS2ZombiePlague.Config;
 
-public sealed class ZombiePlagueRoundConfig
+public sealed class RoundConfig
 {
-    public InfectionRoundConfig Infection { get; set; } = new();
-    public PlagueRoundConfig Plague { get; set; } = new();
-    public NemesisRoundConfig Nemesis { get; set; } = new();
+    public InfectionConfig Infection { get; set; } = new();
+    public PlagueConfig Plague { get; set; } = new();
+    public NemesisConfig Nemesis { get; set; } = new();
 }
 
-public class InfectionRoundConfig : IRoundConfig
+public sealed class InfectionConfig : IRoundConfig
 {
     public bool Enable { get; set; } = true;
     public bool ZombieRevived { get; set; } = true;
@@ -16,7 +16,7 @@ public class InfectionRoundConfig : IRoundConfig
     public float ZombieSpawnTime { get; set; } = 5.0f;
 }
 
-public class PlagueRoundConfig : IRoundConfig
+public sealed class PlagueConfig : IRoundConfig
 {
     public bool Enable { get; set; } = true;
     public bool ZombieRevived { get; set; } = true;
@@ -24,7 +24,7 @@ public class PlagueRoundConfig : IRoundConfig
     public float ZombieSpawnTime { get; set; } = 5.0f;
 }
 
-public class NemesisRoundConfig : IRoundConfig
+public sealed class NemesisConfig : IRoundConfig
 {
     public bool Enable { get; set; } = true;
     public bool NemesisLeap { get; set; } = true;

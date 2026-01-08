@@ -60,6 +60,6 @@ public class ZombiePlayer
 
     public void UnHookAbilities()
     {
-        _zombieClass.Abilities.ForEach(zClass=>zClass.UnHookAbility());
+        _zombieClass.Abilities.ForEach(zClass=>zClass.UnHook());
     }
 }

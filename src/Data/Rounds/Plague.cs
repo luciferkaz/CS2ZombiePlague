@@ -14,7 +14,7 @@ public class Plague(
     RoundManager roundManager,
     ZombieManager zombieManager,
     Utils utils,
-    PlagueRoundConfig config) : IRound
+    PlagueConfig config) : IRound
 {
     private Guid _playerDeathEvent = Guid.Empty;
 

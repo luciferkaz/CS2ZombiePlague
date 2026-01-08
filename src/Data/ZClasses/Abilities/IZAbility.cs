@@ -5,6 +5,6 @@ namespace CS2ZombiePlague.Data.ZClasses.Abilities;
 public interface IZAbility
 {
     public void SetCaster(IPlayer caster);
-    public void UnHookAbility();
-    public void Use();
+    public void UnHook();
+    public void Hook();
 }

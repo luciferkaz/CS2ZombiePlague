@@ -5,7 +5,7 @@ using SwiftlyS2.Shared;
 
 namespace CS2ZombiePlague.Data.Managers;
 
-public class RoundManager(ISwiftlyCore core, IOptions<ZombiePlagueRoundConfig> roundConfig, IRoundFactory roundFactory)
+public class RoundManager(ISwiftlyCore core, IOptions<RoundConfig> roundConfig, IRoundFactory roundFactory)
     : IRoundManager
 {
     private readonly List<IRound> _rounds = [];

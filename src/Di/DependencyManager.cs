@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using CS2ZombiePlague.Config;
 using CS2ZombiePlague.Config.Weapon;
+using CS2ZombiePlague.Config.Ability;
 using CS2ZombiePlague.Config.Zombie;
 using CS2ZombiePlague.Data;
 using CS2ZombiePlague.Data.Managers;
@@ -21,8 +22,10 @@ public static class DependencyManager
     private static ServiceProvider? _provider;
     
     private const string RoundConfigName = "round.json";
-    private const string RoundConfigSectionName = "ZombiePlagueRoundConfig";
-    private const string ZClassConfigName = "zombie_class_config.json";
+    private const string RoundConfigSectionName = "RoundConfig";
+    private const string AbilityConfigName = "ability.json";
+    private const string AbilityConfigSectionName = "AbilityConfig";
+    private const string ZClassConfigName = "zombie_class.json";
     private const string ZClassConfigSectionName = "ZClassConfig";
     private const string KnifeConfigName = "knife.json";
     private const string KnifeConfigSectionName = "KnifeConfig";
@@ -32,8 +35,12 @@ public static class DependencyManager
     public static void Load(ISwiftlyCore core)
     {
         core.Configuration
-            .InitializeJsonWithModel<ZombiePlagueRoundConfig>(RoundConfigName, RoundConfigSectionName)
+            .InitializeJsonWithModel<RoundConfig>(RoundConfigName, RoundConfigSectionName)
             .Configure(builder => { builder.AddJsonFile(RoundConfigName, optional: false, reloadOnChange: true); });
+        
+        core.Configuration
+            .InitializeJsonWithModel<AbilityConfig>(AbilityConfigName, AbilityConfigSectionName)
+            .Configure(builder => { builder.AddJsonFile(AbilityConfigName, optional: false, reloadOnChange: true); });
 
         core.Configuration
             .InitializeJsonWithModel<ZClassConfig>(ZClassConfigName, ZClassConfigSectionName)
@@ -63,10 +70,14 @@ public static class DependencyManager
             .AddSingleton<WeaponManager>()
             .AddSingleton<DamageNotify>()
             .AddSingleton<Utils>();
-
+        
         _services
-            .AddOptionsWithValidateOnStart<ZombiePlagueRoundConfig>()
+            .AddOptionsWithValidateOnStart<RoundConfig>()
             .BindConfiguration(RoundConfigSectionName);
+        
+        _services
+            .AddOptionsWithValidateOnStart<AbilityConfig>()
+            .BindConfiguration(AbilityConfigSectionName);
 
         _services
             .AddOptionsWithValidateOnStart<ZClassConfig>()

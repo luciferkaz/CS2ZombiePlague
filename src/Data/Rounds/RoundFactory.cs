@@ -10,9 +10,9 @@ public class RoundFactory(ISwiftlyCore core, ZombieManager zombieManager, Utils 
     {
         return config switch
         {
-            InfectionRoundConfig roundConfig => new Infection(core, roundManager, zombieManager, utils, roundConfig),
-            NemesisRoundConfig roundConfig => new Nemesis(core, roundManager, zombieManager, roundConfig),
-            PlagueRoundConfig roundConfig => new Plague(core, roundManager, zombieManager, utils, roundConfig),
+            InfectionConfig roundConfig => new Infection(core, roundManager, zombieManager, utils, roundConfig),
+            NemesisConfig roundConfig => new Nemesis(core, roundManager, zombieManager, roundConfig),
+            PlagueConfig roundConfig => new Plague(core, roundManager, zombieManager, utils, roundConfig),
             _ => new None()
         };
     }

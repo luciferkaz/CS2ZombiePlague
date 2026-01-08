@@ -10,7 +10,7 @@ public class Nemesis(
     ISwiftlyCore core,
     RoundManager roundManager,
     ZombieManager zombieManager,
-    NemesisRoundConfig config) : IRound
+    NemesisConfig config) : IRound
 {
     public void Start()
     {

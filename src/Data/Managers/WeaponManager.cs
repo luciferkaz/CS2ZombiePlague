@@ -6,7 +6,7 @@ namespace CS2ZombiePlague.Data.Managers;
 
 public class WeaponManager(ISwiftlyCore core, RoundManager roundManager, Utils utils)
 {
-    private readonly Dictionary<string, ICustomWeapon> _customWeapons = new ();
+    private readonly Dictionary<string, ICustomWeapon> _customWeapons = new();
     
     public void RegisterWeapons()
     {

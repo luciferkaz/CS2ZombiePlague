@@ -14,7 +14,7 @@ public class Infection(
     RoundManager roundManager,
     ZombieManager zombieManager,
     Utils utils,
-    InfectionRoundConfig config) : IRound
+    InfectionConfig config) : IRound
 {
     private Guid _playerDeathEvent = Guid.Empty;
 
