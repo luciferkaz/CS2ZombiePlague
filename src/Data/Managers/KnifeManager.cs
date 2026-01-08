@@ -147,6 +147,11 @@ public class KnifeManager(
                 return;
             }
 
+            if (player.IsInfected())
+            {
+                return;
+            }
+
             pawn.WeaponServices.RemoveWeaponByDesignerName("weapon_knife");
             pawn.ItemServices.GiveItem("weapon_knife_t");
             foreach (var weapon in pawn.WeaponServices.MyValidWeapons)
