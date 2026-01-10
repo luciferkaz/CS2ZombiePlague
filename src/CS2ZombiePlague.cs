@@ -25,6 +25,7 @@ namespace CS2ZombiePlague
         private readonly Lazy<KnifeManager> _knifeManager = new(DependencyManager.GetService<KnifeManager>);
         private readonly Lazy<Knockback> _knockback = new(DependencyManager.GetService<Knockback>);
         private readonly Lazy<DamageNotify> _damageNotify = new(DependencyManager.GetService<DamageNotify>);
+        private readonly Lazy<MoneySystem> _moneySystem = new(DependencyManager.GetService<MoneySystem>);
         private readonly Lazy<Utils> _utils = new(DependencyManager.GetService<Utils>);
 
         public override void Load(bool hotReload)
@@ -49,6 +50,10 @@ namespace CS2ZombiePlague
             if (config.KnockbackEnabled)
             {
                 _knockback.Value.Start();
+            }
+            if (config.MoneySystemEnabled)
+            {
+                _moneySystem.Value.Start();
             }
 
             new AdminMenu(Core, _roundManager.Value, _zombieManager.Value).Load();
