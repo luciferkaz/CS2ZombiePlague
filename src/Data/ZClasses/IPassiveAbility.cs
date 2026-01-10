@@ -2,7 +2,7 @@
 
 namespace CS2ZombiePlague.Data.ZClasses;
 
-public interface IZClassFactory
+public interface IPassiveAbility : IAbility
 {
-    public IAbility Create<T>() where T : IAbility;
+    
 }

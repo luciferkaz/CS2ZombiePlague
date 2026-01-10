@@ -12,7 +12,7 @@ using Vector = SwiftlyS2.Shared.Natives.Vector;
 
 namespace CS2ZombiePlague.Data.Weapons.Grenades;
 
-public class FrostNade(ISwiftlyCore core, RoundManager roundManager, Utils utils) : ICustomWeapon, IGrenade
+public class FrostNade(ISwiftlyCore core, RoundManager roundManager, CommonUtils commonUtils) : ICustomWeapon, IGrenade
 {
     public string OriginalName => "hegrenade_projectile";
     public string IternalName => "weapon_frost_nade";
@@ -34,7 +34,7 @@ public class FrostNade(ISwiftlyCore core, RoundManager roundManager, Utils utils
 
     public void Explode(int userid, Vector position, int grenadeIndex)
     {
-        var playersInRadius = utils.FindAllPlayersInSphere(ExplodeRadius, position);
+        var playersInRadius = commonUtils.FindAllPlayersInSphere(ExplodeRadius, position);
         PlaySound("FrostNade.detonate", grenadeIndex);
 
         foreach (var player in playersInRadius)

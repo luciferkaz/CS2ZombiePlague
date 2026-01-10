@@ -9,7 +9,7 @@ using Vector = SwiftlyS2.Shared.Natives.Vector;
 
 namespace CS2ZombiePlague.Data.Weapons.Grenades;
 
-public class BarrierNade(ISwiftlyCore core, RoundManager roundManager, Utils utils) : ICustomWeapon, IGrenade
+public class BarrierNade(ISwiftlyCore core, RoundManager roundManager, CommonUtils commonUtils) : ICustomWeapon, IGrenade
 {
     public string OriginalName => "decoy_grenade";
     public string IternalName => "barrier_nade";
@@ -45,7 +45,7 @@ public class BarrierNade(ISwiftlyCore core, RoundManager roundManager, Utils uti
         token = core.Scheduler.RepeatBySeconds(Delay, () =>
         {
             startTime += Delay;
-            var playersInRadius = utils.FindAllPlayersInSphere(ExplodeRadius, position);
+            var playersInRadius = commonUtils.FindAllPlayersInSphere(ExplodeRadius, position);
 
             foreach (var player in playersInRadius)
             {

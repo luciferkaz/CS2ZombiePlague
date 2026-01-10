@@ -4,11 +4,11 @@ using CS2ZombiePlague.Config.Ability;
 using CS2ZombiePlague.Config.Weapon;
 using CS2ZombiePlague.Config.Zombie;
 using CS2ZombiePlague.Data;
+using CS2ZombiePlague.Data.Abilities;
 using CS2ZombiePlague.Data.Managers;
 using CS2ZombiePlague.Data.Rounds;
 using CS2ZombiePlague.Data.Weapons.Knifes;
 using CS2ZombiePlague.Data.ZClasses;
-using CS2ZombiePlague.Data.ZClasses.Abilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -61,7 +61,7 @@ public static class DependencyManager
             .AddSingleton<IRoundFactory, RoundFactory>()
             .AddSingleton<IZombiePlayerFactory, ZombiePlayerFactory>()
             .AddSingleton<IKnifeFactory, KnifeFactory>()
-            .AddSingleton<IZAbilityFactory, ZAbilityFactory>()
+            .AddSingleton<IAbilityFactory, AbilityFactory>()
             .AddSingleton<ZombieManager>()
             .AddSingleton<KnifeManager>()
             .AddSingleton<RoundManager>()
@@ -70,7 +70,7 @@ public static class DependencyManager
             .AddSingleton<WeaponManager>()
             .AddSingleton<DamageNotify>()
             .AddSingleton<MoneySystem>()
-            .AddSingleton<Utils>();
+            .AddSingleton<CommonUtils>();
         
         _services
             .AddOptionsWithValidateOnStart<RoundConfig>()
@@ -151,7 +151,7 @@ public static class DependencyManager
         _services
             .AddTransient<ZCleric>(sp =>
             {
-                var abilityFactory = sp.GetRequiredService<IZAbilityFactory>();
+                var abilityFactory = sp.GetRequiredService<IAbilityFactory>();
                 var zClassConfig = sp.GetRequiredService<IOptions<ZClassConfig>>().Value;
                 var config = zClassConfig.Cleric;
                 return new ZCleric(config, abilityFactory);
@@ -192,7 +192,7 @@ public static class DependencyManager
         _services
             .AddTransient<ZNemesis>(sp =>
             {
-                var abilityFactory = sp.GetRequiredService<IZAbilityFactory>();
+                var abilityFactory = sp.GetRequiredService<IAbilityFactory>();
                 var zClassConfig = sp.GetRequiredService<IOptions<ZClassConfig>>().Value;
                 var config = zClassConfig.Nemesis;
                 return new ZNemesis(config, abilityFactory);

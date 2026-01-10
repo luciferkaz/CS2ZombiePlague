@@ -26,7 +26,7 @@ namespace CS2ZombiePlague
         private readonly Lazy<Knockback> _knockback = new(DependencyManager.GetService<Knockback>);
         private readonly Lazy<DamageNotify> _damageNotify = new(DependencyManager.GetService<DamageNotify>);
         private readonly Lazy<MoneySystem> _moneySystem = new(DependencyManager.GetService<MoneySystem>);
-        private readonly Lazy<Utils> _utils = new(DependencyManager.GetService<Utils>);
+        private readonly Lazy<Data.CommonUtils> _utils = new(DependencyManager.GetService<Data.CommonUtils>);
 
         public override void Load(bool hotReload)
         {

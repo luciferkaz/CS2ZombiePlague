@@ -1,11 +1,6 @@
-﻿using SwiftlyS2.Shared;
-using SwiftlyS2.Shared.Events;
-using SwiftlyS2.Shared.Natives;
-using SwiftlyS2.Shared.Players;
+﻿namespace CS2ZombiePlague.Data.Abilities;
 
-namespace CS2ZombiePlague.Data.ZClasses.Abilities;
-
-public class Leap : IZAbility
+/*public class Leap : IZAbility
 {
     private readonly ISwiftlyCore _core;
     private IPlayer? _caster;
@@ -94,4 +89,4 @@ public class Leap : IZAbility
             -MathF.Sin(pitch)
         );
     }
-}
+}*/

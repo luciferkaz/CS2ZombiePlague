@@ -4,14 +4,14 @@ using SwiftlyS2.Shared;
 
 namespace CS2ZombiePlague.Data.Managers;
 
-public class WeaponManager(ISwiftlyCore core, RoundManager roundManager, Utils utils)
+public class WeaponManager(ISwiftlyCore core, RoundManager roundManager, CommonUtils commonUtils)
 {
     private readonly Dictionary<string, ICustomWeapon> _customWeapons = new();
     
     public void RegisterWeapons()
     {
-        Register(new FrostNade(core, roundManager, utils));
-        Register(new BarrierNade(core, roundManager, utils));
+        Register(new FrostNade(core, roundManager, commonUtils));
+        Register(new BarrierNade(core, roundManager, commonUtils));
         
         LoadAll();
     }

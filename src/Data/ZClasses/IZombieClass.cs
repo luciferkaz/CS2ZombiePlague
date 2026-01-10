@@ -1,4 +1,4 @@
-﻿using CS2ZombiePlague.Data.ZClasses.Abilities;
+﻿using CS2ZombiePlague.Data.Abilities;
 
 namespace CS2ZombiePlague.Data.ZClasses;
 
@@ -22,5 +22,5 @@ public interface IZombieClass
     
     public int Gravity { get; set; }
     
-    public List<IZAbility> Abilities { get; set; }
+    public List<IAbility> Abilities { get; set; }
 }

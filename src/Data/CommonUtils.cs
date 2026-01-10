@@ -6,7 +6,7 @@ using Vector = SwiftlyS2.Shared.Natives.Vector;
 
 namespace CS2ZombiePlague.Data;
 
-public class Utils(ISwiftlyCore core)
+public class CommonUtils(ISwiftlyCore core)
 {
     public IPlayer? ResolvePlayerFromHandle(CHandle<CEntityInstance> handle)
     {

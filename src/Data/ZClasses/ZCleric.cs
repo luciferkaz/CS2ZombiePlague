@@ -1,9 +1,9 @@
 ﻿using CS2ZombiePlague.Config.Zombie;
-using CS2ZombiePlague.Data.ZClasses.Abilities;
+using CS2ZombiePlague.Data.Abilities;
 
 namespace CS2ZombiePlague.Data.ZClasses;
 
-public sealed class ZCleric(ZombieCleric config, IZAbilityFactory abilityFactory) : IZombieClass
+public sealed class ZCleric(ZombieCleric config, IAbilityFactory abilityFactory) : IZombieClass
 {
     public string InternalName { get; set; } = config.InternalName;
     
@@ -23,5 +23,5 @@ public sealed class ZCleric(ZombieCleric config, IZAbilityFactory abilityFactory
 
     public int Gravity { get; set; } = config.Gravity;
 
-    public List<IZAbility> Abilities { get; set; } = [abilityFactory.Create<Heal>()];
+    public List<IAbility> Abilities { get; set; } = [abilityFactory.Create<Heal>()];
 }

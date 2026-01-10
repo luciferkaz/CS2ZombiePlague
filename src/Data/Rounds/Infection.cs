@@ -13,7 +13,7 @@ public class Infection(
     ISwiftlyCore core,
     RoundManager roundManager,
     ZombieManager zombieManager,
-    Utils utils,
+    CommonUtils commonUtils,
     InfectionConfig config) : IRound
 {
     private Guid _playerDeathEvent = Guid.Empty;
@@ -69,8 +69,8 @@ public class Infection(
 
     private void TakeDamage(IOnEntityTakeDamageEvent @event)
     {
-        var attacker = utils.ResolvePlayerFromHandle(@event.Info.Attacker);
-        var victim = utils.FindPlayerByPawnAddress(@event.Entity.Address);
+        var attacker = commonUtils.ResolvePlayerFromHandle(@event.Info.Attacker);
+        var victim = commonUtils.FindPlayerByPawnAddress(@event.Entity.Address);
         if (victim == null || !victim.IsValid || attacker == null)
             return;
         if (attacker.IsInfected())

@@ -1,12 +1,6 @@
-﻿using CS2ZombiePlague.Data.Extensions;
-using CS2ZombiePlague.Data.Managers;
-using SwiftlyS2.Shared;
-using SwiftlyS2.Shared.Events;
-using SwiftlyS2.Shared.Players;
+﻿namespace CS2ZombiePlague.Data.Abilities;
 
-namespace CS2ZombiePlague.Data.ZClasses.Abilities;
-
-public class Charge : IZAbility
+/*public class Charge : IZAbility
 {
     private readonly ISwiftlyCore _core;
     private IPlayer? _caster;
@@ -93,4 +87,4 @@ public class Charge : IZAbility
             Use();
         }
     }
-}
+}*/

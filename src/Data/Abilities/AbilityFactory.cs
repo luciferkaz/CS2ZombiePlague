@@ -2,11 +2,11 @@
 using Microsoft.Extensions.Options;
 using SwiftlyS2.Shared;
 
-namespace CS2ZombiePlague.Data.ZClasses.Abilities;
+namespace CS2ZombiePlague.Data.Abilities;
 
-public class ZAbilityFactory(ISwiftlyCore core, IOptions<AbilityConfig> config) : IZAbilityFactory
+public class AbilityFactory(ISwiftlyCore core, IOptions<AbilityConfig> config) : IAbilityFactory
 {
-    public IZAbility Create<T>() where T : IZAbility
+    public IAbility Create<T>() where T : IAbility
     {
         return typeof(T) switch
         {
