@@ -14,19 +14,22 @@ public class MoneySystem(ISwiftlyCore core, IOptions<ZombiePlagueCoreConfig> con
     {
         core.GameEvent.HookPost<EventPlayerHurt>(OnPlayerHurtPost);
         
-        IConVar<int>? convar = core.ConVar.Find<int>("mp_maxmoney");
-        convar.Value = config.Value.MaxMoney;
+        IConVar<int>? maxMoney = core.ConVar.Find<int>("mp_maxmoney");
+        maxMoney!.Value = config.Value.MaxMoney;
+        
+        IConVar<int>? startMoney = core.ConVar.Find<int>("mp_startmoney");
+        startMoney!.Value = config.Value.StartMoney;
     }
-
+    
     private HookResult OnPlayerHurtPost(EventPlayerHurt @event)
     {
         var player = @event.AttackerPlayer;
         var victim = @event.UserIdPlayer;
 
-        if (player == null || !player.IsValid || @event.UserIdPlayer == null)
+        if (!player.IsValid || !victim.IsValid)
             return HookResult.Continue;
 
-        if (player.IsInfected() || victim.PlayerPawn.Team == player.PlayerPawn.Team)
+        if (player.IsInfected() || victim.Controller.Team == player.Controller.Team)
         {
             return HookResult.Continue;
         }

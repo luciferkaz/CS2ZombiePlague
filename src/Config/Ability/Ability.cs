@@ -3,6 +3,8 @@
 public sealed class AbilityConfig
 {
     public HealConfig Heal { get; set; } = new();
+    
+    public LeapConfig Leap { get; set; } = new();
 }
 
 public sealed class HealConfig : IAbilityConfig
@@ -48,4 +50,19 @@ public sealed class HealConfig : IAbilityConfig
     
     // Прозрачность эффекта от 0..255
     public byte AlphaEffectAfterAbilityOnTarget { get; set; } = 80;
+} 
+
+public sealed class LeapConfig : IAbilityConfig
+{
+    // Доступна ли способность
+    public bool Enable { get; set; } = true;
+    
+    // Время в течение которого способность будет недоступна для повторного применения 
+    public float CooldownTime { get; set; } = 10.0f;
+
+    // Максимальная дистанция прыжка
+    public float LeapDistance { get; set; } = 700f;
+    
+    // Высота прыжка
+    public float LeapBoost { get; set; } = 400f;
 } 

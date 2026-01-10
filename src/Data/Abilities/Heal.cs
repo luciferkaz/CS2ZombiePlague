@@ -35,7 +35,7 @@ public sealed class Heal(ISwiftlyCore core, HealConfig config) : BaseActiveAbili
 
         var start = origin.Value + new Vector(0f, 0f, EyePositionZ);
 
-        var forward = ForwardFromAngles(casterPawn.EyeAngles);
+        var forward = _commonUtils.ForwardFromAngles(casterPawn.EyeAngles);
         var end = start + forward * config.MaxHealDistance;
 
         if (!TryFindHealTarget(casterPawn, start, end, out var target))
@@ -192,21 +192,5 @@ public sealed class Heal(ISwiftlyCore core, HealConfig config) : BaseActiveAbili
         sound.SourceEntityIndex = -1;
 
         sound.Emit();
-    }
-
-    private static Vector ForwardFromAngles(QAngle angles)
-    {
-        const float deg2Rad = MathF.PI / 180f;
-
-        var pitch = angles.Pitch * deg2Rad;
-        var yaw = angles.Yaw * deg2Rad;
-
-        var cosPitch = MathF.Cos(pitch);
-
-        return new Vector(
-            cosPitch * MathF.Cos(yaw),
-            cosPitch * MathF.Sin(yaw),
-            -MathF.Sin(pitch)
-        );
     }
 }

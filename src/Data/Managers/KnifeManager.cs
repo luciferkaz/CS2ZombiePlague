@@ -39,7 +39,7 @@ public class KnifeManager(
 
     private HookResult PlayerSpawnEvent(EventPlayerSpawn @event)
     {
-        if (@event.UserIdPlayer == null)
+        if (!@event.UserIdPlayer.IsValid)
         {
             return HookResult.Continue;
         }
@@ -52,9 +52,9 @@ public class KnifeManager(
     private HookResult PlayerEquipEvent(EventItemEquip @event)
     {
         var player = @event.UserIdPlayer;
-        var pawn = player?.PlayerPawn;
+        var pawn = player.RequiredPawn;
 
-        if (player == null || player.Controller.Team == Team.T)
+        if (pawn == null || player.Controller.Team == Team.T)
             return HookResult.Continue;
 
         if (@event.Item != "knife")
@@ -153,8 +153,8 @@ public class KnifeManager(
             if (!_playerKnifes.ContainsKey(player.PlayerID))
                 SetDefaultKnife(player.PlayerID);
 
-            pawn.WeaponServices.RemoveWeaponByDesignerName("weapon_knife");
-            pawn.ItemServices.GiveItem("weapon_knife_t");
+            pawn.WeaponServices?.RemoveWeaponByDesignerName("weapon_knife");
+            pawn.ItemServices?.GiveItem("weapon_knife_t");
             foreach (var weapon in pawn.WeaponServices.MyValidWeapons)
             {
                 if (!weapon.DesignerName.Contains("knife"))
@@ -171,7 +171,7 @@ public class KnifeManager(
     private HookResult PlayerChatEvent(EventPlayerChat @event)
     {
         var player = @event.UserIdPlayer;
-        if (player != null && @event.Text == "!knife" && !player.IsInfected())
+        if (@event.Text == "!knife" && !player.IsInfected())
         {
             core.MenusAPI.OpenMenuForPlayer(player, _menuApi);
         }

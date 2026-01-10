@@ -18,12 +18,12 @@ public class DamageNotify(ISwiftlyCore core, IOptions<ZombiePlagueCoreConfig> co
     {
 
         var player = @event.AttackerPlayer;
-        var victimPawn = @event.UserIdPawn;
+        var victim = @event.UserIdPlayer;
 
-        if (player == null || !player.IsValid || @event.UserIdPlayer == null)
+        if (!player.IsValid || !victim.IsValid)
             return HookResult.Continue;
 
-        if (player.IsInfected() || victimPawn.Team == player.PlayerPawn.Team)
+        if (player.IsInfected() || victim.Controller.Team == player.Controller.Team)
         {
             return HookResult.Continue;
         }
@@ -31,13 +31,13 @@ public class DamageNotify(ISwiftlyCore core, IOptions<ZombiePlagueCoreConfig> co
         if (player.IsFakeClient)
             return HookResult.Continue;
 
-        var victimName = victimPawn.Controller.Value.PlayerName;
+        var victimName = victim.Controller.PlayerName;
         var localizer = core.Translation.GetPlayerLocalizer(player);
 
         player.SendCenterHTML(
             $"<font color='#FFFFFF'>{localizer["DamageNotify.HitMessage"]} </font>" +
             $"<font color='#FF3333'>{victimName}</font><br>" +
-            $"<font color='#CCFF00'>{victimPawn.Health}</font>" +
+            $"<font color='#CCFF00'>{victim.RequiredPlayerPawn.Health}</font>" +
             $" <font color='#FFFFFF'></font> " +
             $"<font color='#FF3333'>-{@event.DmgHealth}</font>"
             , config.Value.DamageNotifyDuration);

@@ -59,107 +59,58 @@ public class CommonUtils(ISwiftlyCore core)
     /// </summary>
     public void AllResetRenderColor()
     {
-        var players = core.PlayerManager.GetAllPlayers();
+        var players = core.PlayerManager.GetAllValidPlayers();
         
         foreach (var player in players)
         {
-            if (player != null && player.IsValid)
-            {
-                player.PlayerPawn.Render = new Color(255, 255, 255);
-                player.PlayerPawn.AnimatedEveryTickUpdated();
-            }
+            player.RequiredPlayerPawn.Render = new Color(255, 255, 255);
+            player.RequiredPlayerPawn.AnimatedEveryTickUpdated();
         }
     }
 
     public void MoveAllPlayersToTeam(Team team)
     {
-        var players = core.PlayerManager.GetAllPlayers();
+        var players = core.PlayerManager.GetAllValidPlayers();
         
         foreach (var player in players)
         {
-            if (player != null && player.IsValid)
-            {
-                player.SwitchTeam(team);
-            }
-        }
-    }
-    public void SortTeam()
-    {
-        int terroristCount = 0;
-        int counterTerroristCount = 0;
-        var allPlayers = core.PlayerManager.GetAllPlayers();
-
-        foreach (var player in allPlayers)
-        {
-            if (player.Controller == null)
-            {
-                continue;
-            }
-
-            if (player.Controller.TeamNum == (int)Team.CT)
-            {
-                counterTerroristCount++;
-            }
-            else if (player.Controller.TeamNum == (int)Team.T)
-            {
-                terroristCount++;
-            }
-        }
-
-        Team teamToSort;
-        int playersToSort = Math.Abs(counterTerroristCount - terroristCount) / 2;
-
-        if (playersToSort == 0)
-        {
-            return;
-        }
-
-        if (counterTerroristCount > terroristCount)
-        {
-            teamToSort = Team.CT;
-        }
-        else
-        {
-            teamToSort = Team.T;
-        }
-
-        foreach (var player in allPlayers)
-        {
-            if (player.Controller == null)
-            {
-                continue;
-            }
-
-            if (player.Controller.TeamNum == (int)teamToSort)
-            {
-                player.SwitchTeam(teamToSort == Team.CT ? Team.T : Team.CT);
-                playersToSort--;
-            }
-
-            if (playersToSort == 0)
-            {
-                return;
-            }
+            player.SwitchTeam(team);
         }
     }
     
     public List<IPlayer> FindAllPlayersInSphere(float radius, Vector position)
     {
-        var allPlayers = core.PlayerManager.GetAllPlayers();
-        List<IPlayer> findedPlayers = new();
+        var allPlayers = core.PlayerManager.GetAllValidPlayers();
+        List<IPlayer> foundPlayers = new();
         
         foreach (IPlayer player in allPlayers)
         {
-            if (player != null && player.IsValid && player.Controller.PawnIsAlive)
+            if (player.IsAlive)
             {
-                var playerPosition = player.Pawn.AbsOrigin.Value;
+                var playerPosition = player.RequiredPawn.AbsOrigin!.Value;
                 if (Math.Sqrt(Math.Pow(playerPosition.X - position.X, 2) + Math.Pow(playerPosition.Y - position.Y, 2) +
                               Math.Pow(playerPosition.Z - position.Z, 2)) <= radius)
                 {
-                    findedPlayers.Add(player);
+                    foundPlayers.Add(player);
                 }
             }
         }
-        return findedPlayers;
+        return foundPlayers;
+    }
+    
+    public Vector ForwardFromAngles(QAngle angles)
+    {
+        const float deg2Rad = MathF.PI / 180f;
+
+        var pitch = angles.Pitch * deg2Rad;
+        var yaw = angles.Yaw * deg2Rad;
+
+        var cosPitch = MathF.Cos(pitch);
+
+        return new Vector(
+            cosPitch * MathF.Cos(yaw),
+            cosPitch * MathF.Sin(yaw),
+            -MathF.Sin(pitch)
+        );
     }
 }

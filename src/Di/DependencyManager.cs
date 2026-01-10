@@ -70,6 +70,7 @@ public static class DependencyManager
             .AddSingleton<WeaponManager>()
             .AddSingleton<DamageNotify>()
             .AddSingleton<MoneySystem>()
+            .AddSingleton<ScreenFade>()
             .AddSingleton<CommonUtils>();
         
         _services

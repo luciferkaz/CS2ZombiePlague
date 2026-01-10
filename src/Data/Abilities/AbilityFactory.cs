@@ -11,6 +11,7 @@ public class AbilityFactory(ISwiftlyCore core, IOptions<AbilityConfig> config) :
         return typeof(T) switch
         {
             var t when t == typeof(Heal) => new Heal(core, config.Value.Heal),
+            var t when t == typeof(Leap) => new Leap(core, config.Value.Leap),
             _ => throw new NotSupportedException("ZAbilityFactory: type T hasn't supported!")
         };
     }

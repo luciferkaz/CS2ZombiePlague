@@ -33,6 +33,7 @@ public class AdminMenu(ISwiftlyCore core, RoundManager roundManager, ZombieManag
         var menu = core.MenusAPI.CreateBuilder()
             .Design.SetMenuTitle("Админ меню");
         AddButtonOption(menu, EndWarmup, "Выключить вармап");
+        AddButtonOption(menu, RestartGame, "Начать игру заново");
         AddButtonOption(menu, GiveMoney, "Выдать себе 5000$");
         AddSubMenuOption(menu, OpenZombieMenu(player), "Сделать зомби");
         AddSubMenuOption(menu, OpenWeaponMenu(player), "Взять оружие");
@@ -70,15 +71,27 @@ public class AdminMenu(ISwiftlyCore core, RoundManager roundManager, ZombieManag
         var menu = core.MenusAPI.CreateBuilder()
             .Design.SetMenuTitle("Арсенал");
         var option1 = new ButtonMenuOption("Взять ак");
-        option1.Click += async (sender, args) => GiveWeapon(args, "weapon_ak");
+        option1.Click += (sender, args) =>
+        {
+            GiveWeapon(args, "weapon_ak");
+            return ValueTask.CompletedTask;
+        };
         menu.AddOption(option1);
         
         var option2 = new ButtonMenuOption("Взять заморозку");
-        option2.Click += async (sender, args) => GiveWeapon(args, "weapon_hegrenade");
+        option2.Click += (sender, args) =>
+        {
+            GiveWeapon(args, "weapon_hegrenade");
+            return ValueTask.CompletedTask;
+        };
         menu.AddOption(option2);
         
         var option3 = new ButtonMenuOption("Взять барьер");
-        option3.Click += async (sender, args) => GiveWeapon(args, "weapon_decoy");
+        option3.Click += (sender, args) =>
+        {
+            GiveWeapon(args, "weapon_decoy");
+            return ValueTask.CompletedTask;
+        };
         menu.AddOption(option3);
         
         return menu.Build();
@@ -102,6 +115,12 @@ public class AdminMenu(ISwiftlyCore core, RoundManager roundManager, ZombieManag
         core.Engine.ExecuteCommandAsync("mp_warmup_end");
         return Task.CompletedTask;
     }
+    
+    private Task RestartGame(MenuOptionClickEventArgs args)
+    {
+        core.Engine.ExecuteCommandAsync("mp_restartgame 1");
+        return Task.CompletedTask;
+    }
 
     private Task GiveMoney(MenuOptionClickEventArgs args)
     {
@@ -117,7 +136,7 @@ public class AdminMenu(ISwiftlyCore core, RoundManager roundManager, ZombieManag
         core.Scheduler.NextTickAsync(() =>
         {
             var player = args.Player;
-            player.PlayerPawn.ItemServices.GiveItem(weaponName);
+            player.PlayerPawn?.ItemServices?.GiveItem(weaponName);
         });
     }
 }

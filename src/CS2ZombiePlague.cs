@@ -26,7 +26,8 @@ namespace CS2ZombiePlague
         private readonly Lazy<Knockback> _knockback = new(DependencyManager.GetService<Knockback>);
         private readonly Lazy<DamageNotify> _damageNotify = new(DependencyManager.GetService<DamageNotify>);
         private readonly Lazy<MoneySystem> _moneySystem = new(DependencyManager.GetService<MoneySystem>);
-        private readonly Lazy<Data.CommonUtils> _utils = new(DependencyManager.GetService<Data.CommonUtils>);
+        private readonly Lazy<ScreenFade> _screenFade = new(DependencyManager.GetService<ScreenFade>);
+        private readonly Lazy<CommonUtils> _utils = new(DependencyManager.GetService<CommonUtils>);
 
         public override void Load(bool hotReload)
         {
@@ -46,7 +47,6 @@ namespace CS2ZombiePlague
             {
                 _damageNotify.Value.Start();
             }
-
             if (config.KnockbackEnabled)
             {
                 _knockback.Value.Start();
@@ -54,6 +54,10 @@ namespace CS2ZombiePlague
             if (config.MoneySystemEnabled)
             {
                 _moneySystem.Value.Start();
+            }
+            if (config.ScreenFadeEnable)
+            {
+                _screenFade.Value.Start();
             }
 
             new AdminMenu(Core, _roundManager.Value, _zombieManager.Value).Load();
@@ -71,7 +75,7 @@ namespace CS2ZombiePlague
             var zombieManager = _zombieManager.Value;
             var roundManager = _roundManager.Value;
             var utils = _utils.Value;
-
+            
             zombieManager.RemoveAll();
             roundManager.CancelToken();
             utils.MoveAllPlayersToTeam(Team.CT);

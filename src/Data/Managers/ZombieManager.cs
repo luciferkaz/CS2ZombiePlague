@@ -10,35 +10,21 @@ public class ZombieManager(IZombiePlayerFactory zombiePlayerFactory, ISwiftlyCor
 {
     private readonly Dictionary<int, ZombiePlayer> _zombiePlayers = new();
 
-    public ZombiePlayer? CreateZombie(IPlayer player)
+    public ZombiePlayer? CreateZombie(IPlayer player, int? attackerId = null, int? victimId = null)
     {
-        if (player is { IsValid: true })
+        if (!player.IsValid)
         {
-            var zClass = DependencyManager.GetService<ZCleric>();
-            return _zombiePlayers[player.PlayerID] =
-                zombiePlayerFactory.Create(player, this, zClass);
+            return null;
         }
 
-        return null;
-    }
-
-    public ZombiePlayer? CreateZombie(IPlayer player, int attackerId, int victimId)
-    {
-        if (player is { IsValid: true })
+        if (attackerId != null && victimId != null)
         {
-            core.GameEvent.FireAsync<EventPlayerDeath>((@event) =>
-            {
-                @event.UserId = victimId;
-                @event.Attacker = attackerId;
-                @event.Weapon = "knife";
-                @event.Assister = -1;
-            });
-
-            var zClass = DependencyManager.GetService<ZCleric>();
-            return _zombiePlayers[player.PlayerID] = zombiePlayerFactory.Create(player, this, zClass);
+            FireFakeDeath(attackerId.Value, victimId.Value);
         }
 
-        return null;
+        var zClass = DependencyManager.GetService<ZCleric>();
+        return _zombiePlayers[player.PlayerID] =
+            zombiePlayerFactory.Create(player, this, zClass);
     }
 
     public ZombiePlayer? CreateNemesis(IPlayer player)
@@ -77,5 +63,16 @@ public class ZombieManager(IZombiePlayerFactory zombiePlayerFactory, ISwiftlyCor
     public Dictionary<int, ZombiePlayer> GetAllZombies()
     {
         return _zombiePlayers;
+    }
+
+    private void FireFakeDeath(int attackerId, int victimId)
+    {
+        core.GameEvent.FireAsync<EventPlayerDeath>((@event) =>
+        {
+            @event.UserId = victimId;
+            @event.Attacker = attackerId;
+            @event.Weapon = "knife";
+            @event.Assister = -1;
+        });
     }
 }

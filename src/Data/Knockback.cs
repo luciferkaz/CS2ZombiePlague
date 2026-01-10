@@ -13,19 +13,19 @@ public class Knockback(ISwiftlyCore core, ZombieManager zombieManager, KnifeMana
 
     private readonly Dictionary<string, KnockbackData> _weaponKnockback = new()
     {
-        { "weapon_glock", new KnockbackData(150.0f, 125.0f) },
-        { "weapon_usp_silencer", new KnockbackData(160.0f, 125.0f) },
-        { "weapon_hkp2000", new KnockbackData(200.0f, 125.0f) },
-        { "weapon_elite", new KnockbackData(225.0f, 125.0f) },
-        { "weapon_p250", new KnockbackData(225.0f, 100.0f) },
-        { "weapon_fiveseven", new KnockbackData(225.0f, 100.0f) },
-        { "weapon_cz75a", new KnockbackData(270.0f, 100.0f) },
-        { "weapon_deagle", new KnockbackData(900.0f, 75.0f) },
+        { "weapon_glock", new KnockbackData(150.0f, 200.0f) },
+        { "weapon_usp_silencer", new KnockbackData(160.0f, 200.0f) },
+        { "weapon_hkp2000", new KnockbackData(200.0f, 200.0f) },
+        { "weapon_elite", new KnockbackData(225.0f, 200.0f) },
+        { "weapon_p250", new KnockbackData(225.0f, 200.0f) },
+        { "weapon_fiveseven", new KnockbackData(225.0f, 200.0f) },
+        { "weapon_cz75a", new KnockbackData(270.0f, 200.0f) },
+        { "weapon_deagle", new KnockbackData(900.0f, 125.0f) },
         { "weapon_revolver", new KnockbackData(900.0f, 125.0f) },
-        { "weapon_nova", new KnockbackData(750.0f, 75.0f) },
-        { "weapon_xm1014", new KnockbackData(750.0f, 75.0f) },
-        { "weapon_sawedoff", new KnockbackData(750.0f, 75.0f) },
-        { "weapon_mag7", new KnockbackData(750.0f, 75.0f) },
+        { "weapon_nova", new KnockbackData(500.0f, 75.0f) },
+        { "weapon_xm1014", new KnockbackData(500.0f, 75.0f) },
+        { "weapon_sawedoff", new KnockbackData(500.0f, 75.0f) },
+        { "weapon_mag7", new KnockbackData(500.0f, 75.0f) },
         { "weapon_m249", new KnockbackData(300.0f, 75.0f) },
         { "weapon_negev", new KnockbackData(300.0f, 150.0f) },
         { "weapon_mac10", new KnockbackData(300.0f, 150.0f) },
@@ -37,9 +37,9 @@ public class Knockback(ISwiftlyCore core, ZombieManager zombieManager, KnifeMana
         { "weapon_bizon", new KnockbackData(300.0f, 150.0f) },
         { "weapon_galilar", new KnockbackData(300.0f, 150.0f) },
         { "weapon_famas", new KnockbackData(300.0f, 150.0f) },
-        { "weapon_ak47", new KnockbackData(400.0f, 250.0f) },
-        { "weapon_m4a4", new KnockbackData(400.0f, 250.0f) },
-        { "weapon_m4a1_silencer", new KnockbackData(350.0f, 250.0f) },
+        { "weapon_ak47", new KnockbackData(600.0f, 150.0f) },
+        { "weapon_m4a4", new KnockbackData(600.0f, 150.0f) },
+        { "weapon_m4a1_silencer", new KnockbackData(350.0f, 150.0f) },
         { "weapon_ssg08", new KnockbackData(300.0f, 150.0f) },
         { "weapon_sg556", new KnockbackData(300.0f, 150.0f) },
         { "weapon_aug", new KnockbackData(300.0f, 150.0f) },
@@ -83,10 +83,13 @@ public class Knockback(ISwiftlyCore core, ZombieManager zombieManager, KnifeMana
             weaponKnockback = knifeManager.GetPlayerKnife(attacker.PlayerID).Knockback;
         }
 
-        var victimOrigin = victim.Pawn!.AbsOrigin.Value;
-        var attackerOrigin = attacker.Pawn!.AbsOrigin.Value;
+        var attackerPawn = attacker.RequiredPlayerPawn;
+        var victimPawn = victim.RequiredPlayerPawn;
+        
+        var victimOrigin = victimPawn.AbsOrigin!.Value;
+        var attackerOrigin = attackerPawn.AbsOrigin!.Value;
 
-        var directionVector = (victimOrigin - attackerOrigin)!.Normalized();
+        var directionVector = (victimOrigin - attackerOrigin).Normalized();
         var distance = GetDistance(victimOrigin, attackerOrigin);
 
         float recoil = GetGunRecoil(distance, weaponKnockback,
@@ -94,19 +97,21 @@ public class Knockback(ISwiftlyCore core, ZombieManager zombieManager, KnifeMana
 
         var zombie = zombieManager.GetZombie(victim.PlayerID);
         var zombieKnockback = zombie.GetZombieClass().Knockback;
-
-        bool onGround = victim.Pawn.GroundEntity.Value != null;
+        
+        bool onGround = victimPawn.GroundEntity.Value != null;
         var zBoost = onGround ? 150f : 25f;
 
+        var victimVelocity = victimPawn.AbsVelocity;
+        
         Vector newVelocity = new Vector(
-            directionVector.X * recoil * zombieKnockback,
-            directionVector.Y * recoil * zombieKnockback,
-            zBoost
+            victimVelocity.X + directionVector.X * recoil * zombieKnockback,
+            victimVelocity.Y + directionVector.Y * recoil * zombieKnockback,
+            victimVelocity.Z + zBoost
         );
 
-        victim.Pawn.GroundEntity.Value = null;
+        victimPawn.GroundEntity.Value = null;
 
-        victim.Teleport(victimOrigin, victim.PlayerPawn.EyeAngles, newVelocity);
+        victim.Teleport(victimOrigin, victimPawn.EyeAngles, newVelocity);
 
         core.Scheduler.Delay(20, () => { victim.SetSpeed(zombie.GetZombieClass().Speed); });
 

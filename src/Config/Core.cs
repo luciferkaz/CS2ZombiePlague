@@ -8,8 +8,30 @@ public sealed class ZombiePlagueCoreConfig
     public bool KnockbackEnabled { get; set; } = true;
     
     public bool MoneySystemEnabled { get; set; } = true;
-    public int MaxMoney { get; set; } = 64000;
+    public int MaxMoney { get; set; } = 100000;
+    public int StartMoney { get; set; } = 5000;
 
-    public int PreStartDelay { get; set; } = 15;
+    public int PreStartDelay { get; set; } = 20;
     public int ZombieSpawnDelay { get; set; } = 5;
+    
+    // Включить подсветку экрана после убийства
+    public bool ScreenFadeEnable { get; set; } = true;
+    
+    // Время когда эффект будет появляться и потухать (120 мс тратится на появление эффекта и 120 мс на растворение) 
+    public uint DurationScreenFade { get; set; } = 120;
+
+    // Время сколько эффект задержится на экране (Duration + holdTime + Duration = общее время эффекта на экране)
+    public uint HoldTimeScreenFade { get; set; } = 75;
+
+    // Кол-во красного в цвете эффекта от 0..255
+    public byte RedColorScreenFade { get; set; } = 0;
+    
+    // Кол-во зеленного в цвете эффекта от 0..255
+    public byte GreenColorScreenFade{ get; set; } = 0;
+    
+    // Кол-во синего в цвете эффекта от 0..255
+    public byte BlueColorScreenFade { get; set; } = 255;
+    
+    // Прозрачность эффекта от 0..255
+    public byte AlphaScreenFade { get; set; } = 80;
 }

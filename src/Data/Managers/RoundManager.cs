@@ -6,14 +6,13 @@ using SwiftlyS2.Shared.Sounds;
 
 namespace CS2ZombiePlague.Data.Managers;
 
-public class RoundManager(ISwiftlyCore core, IOptions<RoundConfig> roundConfig, IRoundFactory roundFactory)
+public class RoundManager(ISwiftlyCore core, IOptions<ZombiePlagueCoreConfig> coreConfig, IOptions<RoundConfig> roundConfig, IRoundFactory roundFactory)
     : IRoundManager
 {
     private readonly List<IRound> _rounds = [];
     private IRound? _currentRound;
 
     private CancellationTokenSource? _token;
-    private const int RoundStartTime = 15;
 
     public void RegisterRounds()
     {
@@ -31,20 +30,23 @@ public class RoundManager(ISwiftlyCore core, IOptions<RoundConfig> roundConfig, 
 
     public void Start()
     {
+        var roundStartTime = coreConfig.Value.PreStartDelay;
         var localTime = 0;
         bool soundIsActive = false;
 
+        StartRoundMusic();
+            
         _token = core.Scheduler.RepeatBySeconds(1, () =>
         {
             localTime += 1;
-            core.PlayerManager.SendCenter("До заражения " + (RoundStartTime - localTime) + " секунд");
+            core.PlayerManager.SendCenter("До заражения " + (roundStartTime - localTime) + " секунд");
 
-            if (RoundStartTime - localTime <= 11 && !soundIsActive)
+            if (roundStartTime - localTime <= 11 && !soundIsActive)
             {
                 soundIsActive = StartCountdownSound();
             }
 
-            if (localTime >= RoundStartTime)
+            if (localTime >= roundStartTime)
             {
                 if (_currentRound is None)
                 {
@@ -92,6 +94,18 @@ public class RoundManager(ISwiftlyCore core, IOptions<RoundConfig> roundConfig, 
         return _currentRound;
     }
 
+    private void StartRoundMusic()
+    {
+        using var soundEvent = new SoundEvent()
+        {
+            Volume = 2,
+            Name = "ZombiePlagueSounds.round_start",
+            SourceEntityIndex = -1
+        };
+        soundEvent.Recipients.AddAllPlayers();
+        soundEvent.Emit();
+    }
+    
     private bool StartCountdownSound()
     {
         using var soundEvent = new SoundEvent()
