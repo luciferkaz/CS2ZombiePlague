@@ -19,13 +19,14 @@ public class ZombiePlayer
         _player = player;
 
         Initialize();
-        
+
         player.SendAlert("Ваш класс => " + zombieClass.DisplayName);
     }
 
     public bool Infect(IPlayer target)
     {
-        if (target != null && !target.IsInfected() && !target.IsLastHuman() && target.PlayerPawn.ArmorValue == 0 && !_player.IsNemesis())
+        if (target != null && !target.IsInfected() && !target.IsLastHuman() && target.PlayerPawn.ArmorValue == 0 &&
+            !_player.IsNemesis())
         {
             _zombieManager.CreateZombie(target, _player.PlayerID, target.PlayerID);
             return true;
@@ -45,11 +46,11 @@ public class ZombiePlayer
         _player.SetSpeed(_zombieClass.Speed);
         _player.SetGravity(_zombieClass.Gravity);
         _player.SetModel(_zombieClass.Model);
-        
-        _zombieClass.Abilities.ForEach(zClass=>zClass.SetCaster(_player));
-        
+
+        _zombieClass.Abilities.ForEach(zClass => zClass.SetCaster(_player));
+
         _player.SwitchTeam(Team.T);
-        
+
         var itemServices = _player.PlayerPawn?.ItemServices;
         if (itemServices != null)
         {
@@ -60,6 +61,11 @@ public class ZombiePlayer
 
     public void UnHookAbilities()
     {
-        _zombieClass.Abilities.ForEach(zClass=>zClass.UnHook());
+        _zombieClass.Abilities.ForEach(zClass => zClass.UnHook());
+    }
+
+    public IPlayer GetPlayer()
+    {
+        return _player;
     }
 }

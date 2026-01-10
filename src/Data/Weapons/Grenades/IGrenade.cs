@@ -4,5 +4,5 @@ namespace CS2ZombiePlague.Data.Weapons.Grenades;
 
 public interface IGrenade
 {
-    public void Explode(int userid, Vector position);
+    public void Explode(int userid, Vector position, int grenadeIndex);
 }

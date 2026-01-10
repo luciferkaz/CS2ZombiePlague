@@ -23,5 +23,5 @@ public class ZNemesis(ZombieNemesis config, IZAbilityFactory abilityFactory) : I
 
     public int Gravity { get; set; } = config.Gravity;
 
-    public List<IZAbility> Abilities { get; set; } = [abilityFactory.Create<Leap>()];
+    public List<IZAbility> Abilities { get; set; } = [];
 }

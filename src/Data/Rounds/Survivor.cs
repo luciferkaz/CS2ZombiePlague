@@ -1,0 +1,53 @@
+﻿using CS2ZombiePlague.Config;
+using CS2ZombiePlague.Data.Extensions;
+using CS2ZombiePlague.Data.Managers;
+using SwiftlyS2.Shared;
+using SwiftlyS2.Shared.Natives;
+using SwiftlyS2.Shared.Players;
+
+namespace CS2ZombiePlague.Data.Rounds;
+
+public class Survivor(ISwiftlyCore core, RoundManager roundManager, ZombieManager zombieManager, SurvivorConfig config) : IRound
+{
+    public void Start()
+    {
+
+        var allPlayers = core.PlayerManager.GetAlive().ToList();
+        var survivor = allPlayers[Random.Shared.Next(0, allPlayers.Count)];
+
+        foreach (var player in allPlayers)
+        {
+            if (!player.Equals(survivor))
+            {
+                zombieManager.CreateZombie(player);
+            }
+        }
+        Initialize(survivor);
+
+        core.PlayerManager.SendCenter("Выживший => " + survivor.Controller.PlayerName);
+    }
+    
+    public void End()
+    {
+        roundManager.SetRound(new None());
+
+        core.PlayerManager.SendCenter("Раунд окончен");
+    }
+
+    private void Initialize(IPlayer survivor)
+    {
+        var countPlayers = core.PlayerManager.GetAlive().Count();
+        var playerPawn = survivor.RequiredPlayerPawn;
+
+        survivor.SetHealth(playerPawn.Health + (config.SurvivorBonusHealthPerZombie * countPlayers));
+        playerPawn.Render = new Color(0, 0, 255);
+
+        var itemServices = playerPawn.ItemServices;
+        if (itemServices == null) return;
+
+        itemServices.RemoveItems();
+        itemServices.GiveItem("weapon_knife_t");
+        itemServices.GiveItem("weapon_negev");
+    }
+    
+}

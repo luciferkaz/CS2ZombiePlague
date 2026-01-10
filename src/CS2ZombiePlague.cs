@@ -27,7 +27,7 @@ namespace CS2ZombiePlague
         private readonly Lazy<DamageNotify> _damageNotify = new(DependencyManager.GetService<DamageNotify>);
         private readonly Lazy<MoneySystem> _moneySystem = new(DependencyManager.GetService<MoneySystem>);
         private readonly Lazy<Utils> _utils = new(DependencyManager.GetService<Utils>);
-        
+
         public override void Load(bool hotReload)
         {
             if (hotReload)
@@ -40,12 +40,13 @@ namespace CS2ZombiePlague
             _roundManager.Value.RegisterRounds();
             _weaponManager.Value.RegisterWeapons();
             _knifeManager.Value.RegisterHooks();
-            
+
             var config = DependencyManager.GetService<IOptions<ZombiePlagueCoreConfig>>().Value;
             if (config.DamageNotifyEnabled)
             {
                 _damageNotify.Value.Start();
             }
+
             if (config.KnockbackEnabled)
             {
                 _knockback.Value.Start();
@@ -54,10 +55,11 @@ namespace CS2ZombiePlague
             {
                 _moneySystem.Value.Start();
             }
-            
+
+            new AdminMenu(Core, _roundManager.Value, _zombieManager.Value).Load();
+
             Core.GameEvent.HookPost<EventRoundStart>(OnRoundStart);
             Core.GameEvent.HookPost<EventRoundEnd>(OnRoundEnd);
-            
         }
 
         public override void Unload()
@@ -117,10 +119,6 @@ namespace CS2ZombiePlague
         [EventListener<EventDelegates.OnPrecacheResource>]
         private void OnPrecacheResource(IOnPrecacheResourceEvent @event)
         {
-            @event.AddItem("sounds/weapons/frostnade/frostnade_detonate.vsnd");
-            @event.AddItem("sounds/weapons/frostnade/frostnade_hit.vsnd");
-            @event.AddItem("sounds/weapons/frostnade/frostnade_end.vsnd");
-            @event.AddItem("sounds/countdown/countdown.vsnd");
             @event.AddItem("characters/models/s2ze/zombie_frozen/zombie_frozen.vmdl");
             @event.AddItem("characters/models/kolka/2025/bull/bull.vmdl");
             @event.AddItem("characters/models/kolka/2025/hazmat/hazmat.vmdl");
@@ -146,6 +144,11 @@ namespace CS2ZombiePlague
             @event.AddItem("particles/kolka/part16.vpcf");
             @event.AddItem("particles/kolka/part17.vpcf");
             @event.AddItem("particles/kolka/part18.vpcf");
+            @event.AddItem("soundevents/soundevents_zombieplague.vsndevts");
+            @event.AddItem("sounds/cs2/countdown/countdown.vsnd");
+            @event.AddItem("sounds/cs2/weapons/frostnade/frostnade_detonate.vsnd");
+            @event.AddItem("sounds/cs2/weapons/frostnade/frostnade_end.vsnd");
+            @event.AddItem("sounds/cs2/weapons/frostnade/frostnade_hit.vsnd");
         }
 
         [EventListener<EventDelegates.OnWeaponServicesCanUseHook>]

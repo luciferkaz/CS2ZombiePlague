@@ -54,9 +54,7 @@ public class KnifeManager(
         var player = @event.UserIdPlayer;
         var pawn = player?.PlayerPawn;
 
-        if (player == null ||
-            pawn == null && !player.Controller.PawnIsAlive ||
-            (!roundManager.IsNoneRound() && player.Controller.Team == Team.T))
+        if (player == null || player.Controller.Team == Team.T)
             return HookResult.Continue;
 
         if (@event.Item != "knife")
@@ -151,6 +149,9 @@ public class KnifeManager(
             {
                 return;
             }
+            
+            if (!_playerKnifes.ContainsKey(player.PlayerID))
+                SetDefaultKnife(player.PlayerID);
 
             pawn.WeaponServices.RemoveWeaponByDesignerName("weapon_knife");
             pawn.ItemServices.GiveItem("weapon_knife_t");

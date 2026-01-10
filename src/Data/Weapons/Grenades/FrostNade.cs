@@ -7,6 +7,7 @@ using SwiftlyS2.Shared.Misc;
 using SwiftlyS2.Shared.Natives;
 using SwiftlyS2.Shared.Players;
 using SwiftlyS2.Shared.SchemaDefinitions;
+using SwiftlyS2.Shared.Sounds;
 using Vector = SwiftlyS2.Shared.Natives.Vector;
 
 namespace CS2ZombiePlague.Data.Weapons.Grenades;
@@ -20,20 +21,21 @@ public class FrostNade(ISwiftlyCore core, RoundManager roundManager, Utils utils
     private readonly Dictionary<int, Color> _oldRender = new();
     private readonly Dictionary<int, IPlayer> _frozenPlayers = new();
 
-    private const float ExplodeRadius = 200.0f;
+    private const float ExplodeRadius = 250.0f;
     private const float FreezeTime = 5.0f;
     private const float Delay = 0.1f;
     private const float StartTime = 0f;
-    
+
     public void Load()
     {
         core.GameEvent.HookPre<EventHegrenadeDetonate>(PreEventGrenadeDetonate);
         core.Event.OnEntityTakeDamage += TakeDamage;
     }
 
-    public void Explode(int userid, Vector position)
+    public void Explode(int userid, Vector position, int grenadeIndex)
     {
         var playersInRadius = utils.FindAllPlayersInSphere(ExplodeRadius, position);
+        PlaySound("FrostNade.detonate", grenadeIndex);
 
         foreach (var player in playersInRadius)
         {
@@ -58,17 +60,17 @@ public class FrostNade(ISwiftlyCore core, RoundManager roundManager, Utils utils
             @event.Info.Damage = 0;
         }
     }
-
+    
     private HookResult PreEventGrenadeDetonate(EventHegrenadeDetonate @event)
     {
         var grenade = core.EntitySystem.GetEntityByIndex<CEntityInstance>((uint)@event.EntityID);
         if (grenade != null && grenade.IsValid)
         {
-            Explode(@event.UserId, new Vector(@event.X, @event.Y, @event.Z));
+            Explode(@event.UserId, new Vector(@event.X, @event.Y, @event.Z), (int)grenade.Index);
             grenade.Despawn();
         }
 
-        return HookResult.Stop;
+        return HookResult.Handled;
     }
 
     private void CreateStateHandler(IPlayer player)
@@ -104,6 +106,8 @@ public class FrostNade(ISwiftlyCore core, RoundManager roundManager, Utils utils
         player.PlayerPawn.ActualMoveType = MoveType_t.MOVETYPE_FLY;
         player.PlayerPawn.MoveTypeUpdated();
         player.PlayerPawn.AbsVelocity = new Vector(0, 0, 0);
+
+        PlaySound("FrostNade.hit", (int)player.PlayerPawn.Index);
     }
 
     private void UnFreeze(IPlayer player)
@@ -111,5 +115,19 @@ public class FrostNade(ISwiftlyCore core, RoundManager roundManager, Utils utils
         player.PlayerPawn.MoveType = MoveType_t.MOVETYPE_WALK;
         player.PlayerPawn.ActualMoveType = MoveType_t.MOVETYPE_WALK;
         player.PlayerPawn.MoveTypeUpdated();
+
+        PlaySound("FrostNade.end", (int)player.PlayerPawn.Index);
+    }
+
+    private void PlaySound(string soundName, int entityIndex)
+    {
+        using var soundEvent = new SoundEvent()
+        {
+            Volume = 3.5f,
+            Name = soundName,
+            SourceEntityIndex = entityIndex
+        };
+        soundEvent.Recipients.AddAllPlayers();
+        soundEvent.Emit();
     }
 }

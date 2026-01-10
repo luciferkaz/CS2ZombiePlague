@@ -18,7 +18,6 @@ public class Nemesis(
         var nemesis = players[Random.Shared.Next(0, players.Count)];
 
         zombieManager.CreateNemesis(nemesis);
-
         Initialize(nemesis);
 
         foreach (var player in players)
@@ -29,7 +28,7 @@ public class Nemesis(
             }
         }
 
-        core.PlayerManager.SendCenter("[red]Немезида => " + nemesis.Controller.PlayerName);
+        core.PlayerManager.SendCenter("Немезида => " + nemesis.Controller.PlayerName);
     }
 
     public void End()
@@ -43,7 +42,7 @@ public class Nemesis(
     {
         var zombieNemesis = zombieManager.GetZombie(nemesis.PlayerID);
         var zombieClass = zombieNemesis.GetZombieClass();
-        var countPlayers = core.PlayerManager.GetAllPlayers().Count();
+        var countPlayers = core.PlayerManager.GetAlive().Count();
 
         nemesis.SetHealth(zombieClass.Health + (config.NemesisBonusHealthPerPlayer * countPlayers));
     }

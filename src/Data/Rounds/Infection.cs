@@ -41,10 +41,18 @@ public class Infection(
             _playerDeathEvent = core.GameEvent.HookPre<EventPlayerDeath>(EventPlayerDeath);
         }
 
-        var players = core.PlayerManager.GetAllPlayers().ToList();
-        var firstZombie = players[Random.Shared.Next(0, players.Count)];
+        var players = core.PlayerManager.GetAlive().ToList();
+        IPlayer firstZombie;
 
-        zombieManager.CreateZombie(firstZombie);
+        if (zombieManager.GetAllZombies().Any())
+        {
+            firstZombie = zombieManager.GetAllZombies().First().Value.GetPlayer();
+        }
+        else
+        {
+            firstZombie = players[Random.Shared.Next(0, players.Count)];
+            zombieManager.CreateZombie(firstZombie);
+        }
 
         firstZombie.SetHealth((int)(firstZombie.PlayerPawn!.Health * config.FirstZombieHealthRatio));
 

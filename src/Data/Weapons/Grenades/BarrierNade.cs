@@ -30,16 +30,16 @@ public class BarrierNade(ISwiftlyCore core, RoundManager roundManager, Utils uti
         core.GameEvent.HookPre<EventDecoyStarted>(PreEventGrenadeStarted);
     }
 
-    public void Explode(int userid, Vector position)
+    public void Explode(int userid, Vector position, int grenadeIndex)
     {
         var startTime = StartTime;
 
         var particle = core.EntitySystem.CreateEntity<CParticleSystem>();
-        particle.EffectName = ParticleEffectName;
         particle.StartActive = true;
-
-        particle.DispatchSpawn();
+        particle.EffectName = ParticleEffectName;
         particle.Teleport(position, null, null);
+        particle.DispatchSpawn();
+        
         CancellationTokenSource token = null!;
 
         token = core.Scheduler.RepeatBySeconds(Delay, () =>
@@ -55,7 +55,7 @@ public class BarrierNade(ISwiftlyCore core, RoundManager roundManager, Utils uti
                 }
             }
 
-            if (startTime >= LiveTime || roundManager.IsNoneRound())
+            if (startTime >= LiveTime)
             {
                 if (particle != null)
                 {
@@ -72,7 +72,7 @@ public class BarrierNade(ISwiftlyCore core, RoundManager roundManager, Utils uti
         var grenade = core.EntitySystem.GetEntityByIndex<CEntityInstance>((uint)@event.EntityID);
         if (grenade != null && grenade.IsValid)
         {
-            Explode(@event.UserId, new Vector(@event.X, @event.Y, @event.Z));
+            Explode(@event.UserId, new Vector(@event.X, @event.Y, @event.Z), (int)grenade.Index);
             grenade.Despawn();
         }
 
