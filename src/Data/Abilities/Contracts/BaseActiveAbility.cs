@@ -67,7 +67,7 @@ public abstract class BaseActiveAbility(ISwiftlyCore core) : IActiveAbility, ICo
     
     public void OnClientKeyStateChanged(IOnClientKeyStateChangedEvent @event)
     {
-        if (@event.PlayerId == Caster.PlayerID && @event.Pressed && @event.Key == Key && !IsActive)
+        if (@event.PlayerId == Caster.PlayerID && @event.Pressed && @event.Key == Key)
         {
             OnClientButtonClickHandler(@event.PlayerId, @event.Key, @event.Pressed);
         }
@@ -84,6 +84,8 @@ public abstract class BaseActiveAbility(ISwiftlyCore core) : IActiveAbility, ICo
     {
         if (IsActive)
         {
+            Caster.SendMessage(MessageType.Alert,
+                $"Способность восстановится через {Cooldown - _cooldownElapsedTime} секунд", 300);
             return;
         }
 

@@ -119,13 +119,13 @@ public sealed class ChargeConfig : IAbilityConfig
     public List<string> ParticleEffectNames { get; set; } = [""];
 
     // Путь к звуковому эффекту способности
-    public List<string> SoundEffectNames { get; set; } = [""];
+    public List<string> SoundEffectNames { get; set; } = ["ZombiePlagueAbility.zombie_pressure"];
     
     // Максимальная скорость при использовании способности
-    public float MaxSpeed { get; set; } = 600f;
+    public float MaxSpeed { get; set; } = 550f;
 
     // Общее время действия способности 
-    public uint ChargeTime { get; set; } = 5;
+    public uint ChargeTime { get; set; } = 3;
 
     // Время обновления скорости (от 0.01 до 0.1, чем меньше, тем плавнее) 
     public float SpeedUpdatePerTimeTick { get; set; } = 0.05f;

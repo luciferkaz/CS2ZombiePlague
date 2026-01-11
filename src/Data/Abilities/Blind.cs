@@ -50,7 +50,7 @@ public sealed class Blind : BasePassiveAbility
     {
         var attacker = @event.AttackerPlayer;
         var victim = @event.UserIdPlayer;
-
+        
         if (!attacker.IsValid || !attacker.IsAlive || attacker.IsInfected())
         {
             return HookResult.Continue;
