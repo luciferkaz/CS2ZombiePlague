@@ -4,7 +4,7 @@ using CS2ZombiePlague.Data.Abilities.Contracts;
 
 namespace CS2ZombiePlague.Data.ZClasses;
 
-public sealed class ZHeavy(ZombieHeavy config) : IZombieClass
+public sealed class ZHeavy(ZombieHeavy config, IAbilityFactory abilityFactory) : IZombieClass
 {
     public string InternalName { get; set; } = config.InternalName;
 
@@ -24,5 +24,5 @@ public sealed class ZHeavy(ZombieHeavy config) : IZombieClass
 
     public int Gravity { get; set; } = config.Gravity;
 
-    public List<IAbility> Abilities { get; set; } = [];
+    public List<IAbility> Abilities { get; set; } = [abilityFactory.Create<Blind>()];
 }

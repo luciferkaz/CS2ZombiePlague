@@ -27,6 +27,7 @@ namespace CS2ZombiePlague
         private readonly Lazy<DamageNotify> _damageNotify = new(DependencyManager.GetService<DamageNotify>);
         private readonly Lazy<MoneySystem> _moneySystem = new(DependencyManager.GetService<MoneySystem>);
         private readonly Lazy<ScreenFade> _screenFade = new(DependencyManager.GetService<ScreenFade>);
+        private readonly Lazy<ZClassMenu> _zClassMenu = new(DependencyManager.GetService<ZClassMenu>);
         private readonly Lazy<CommonUtils> _utils = new(DependencyManager.GetService<CommonUtils>);
 
         public override void Load(bool hotReload)
@@ -41,6 +42,7 @@ namespace CS2ZombiePlague
             _roundManager.Value.RegisterRounds();
             _weaponManager.Value.RegisterWeapons();
             _knifeManager.Value.RegisterHooks();
+            _zClassMenu.Value.RegisterHooks();
 
             var config = DependencyManager.GetService<IOptions<ZombiePlagueCoreConfig>>().Value;
             if (config.DamageNotifyEnabled)
@@ -153,6 +155,7 @@ namespace CS2ZombiePlague
             @event.AddItem("sounds/cs2/weapons/frostnade/frostnade_detonate.vsnd");
             @event.AddItem("sounds/cs2/weapons/frostnade/frostnade_end.vsnd");
             @event.AddItem("sounds/cs2/weapons/frostnade/frostnade_hit.vsnd");
+            @event.AddItem("sounds/cs2/zombie/zombie_pressure.vsnd");
         }
 
         [EventListener<EventDelegates.OnWeaponServicesCanUseHook>]
