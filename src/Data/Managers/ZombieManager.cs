@@ -22,7 +22,7 @@ public class ZombieManager(IZombiePlayerFactory zombiePlayerFactory, ZClassMenu 
             FireFakeDeath(attackerId.Value, victimId.Value);
         }
 
-        var zClass = zClassMenu.GetPlayerZombieClass(player.PlayerID);
+        var zClass = GetZClassFromMenu(player.PlayerID);
         return _zombiePlayers[player.PlayerID] =
             zombiePlayerFactory.Create(player, this, zClass);
     }
@@ -63,6 +63,11 @@ public class ZombieManager(IZombiePlayerFactory zombiePlayerFactory, ZClassMenu 
     public Dictionary<int, ZombiePlayer> GetAllZombies()
     {
         return _zombiePlayers;
+    }
+
+    public IZombieClass GetZClassFromMenu(int playerId)
+    {
+        return zClassMenu.GetPlayerZombieClass(playerId);
     }
 
     private void FireFakeDeath(int attackerId, int victimId)

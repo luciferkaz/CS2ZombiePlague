@@ -1,7 +1,5 @@
-﻿using CS2ZombiePlague.Config.Zombie;
-using CS2ZombiePlague.Data.ZClasses;
+﻿using CS2ZombiePlague.Data.ZClasses;
 using CS2ZombiePlague.Di;
-using Microsoft.Extensions.Options;
 using SwiftlyS2.Core.Menus.OptionsBase;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.GameEventDefinitions;
@@ -10,77 +8,66 @@ using SwiftlyS2.Shared.Misc;
 
 namespace CS2ZombiePlague.Data;
 
-public class ZClassMenu
+public class ZClassMenu(ISwiftlyCore core)
 {
-    private readonly Dictionary<int, IZClassConfig> _playersZClass = new();
+    private readonly Dictionary<int, IZombieClass> _playersZClass = new();
     private IMenuAPI _menu;
-
-    private ISwiftlyCore _core;
-    private readonly ZClassConfig _config;
-
-    public ZClassMenu(ISwiftlyCore core, IOptions<ZClassConfig> config)
-    {
-        _core = core;
-        _config = config.Value;
-    }
 
     public void RegisterHooks()
     {
         _menu = CreateMenu();
-        _core.GameEvent.HookPost<EventPlayerChat>(PlayerChatEvent);
+        core.GameEvent.HookPost<EventPlayerChat>(PlayerChatEvent);
     }
 
     public IZombieClass GetPlayerZombieClass(int playerId)
     {
-        if (_playersZClass.TryGetValue(playerId, out var zombieClassConfig))
+        if (_playersZClass.TryGetValue(playerId, out var zombieClass))
         {
-            return zombieClassConfig switch
-            {
-                ZombieCleric => DependencyManager.GetService<ZCleric>(),
-                ZombieAssassin => DependencyManager.GetService<ZAssassin>(),
-                ZombieHeavy => DependencyManager.GetService<ZHeavy>(),
-                ZombieHunter => DependencyManager.GetService<ZHunter>(),
-                ZombieShaman => DependencyManager.GetService<ZShaman>(),
-            };
+            return zombieClass;
         }
 
-        return DependencyManager.GetService<ZCleric>();
+        return _playersZClass[playerId] = DependencyManager.GetService<ZCleric>();
     }
 
     private IMenuAPI CreateMenu()
     {
-        var builder = _core.MenusAPI.CreateBuilder()
+        var builder = core.MenusAPI.CreateBuilder()
             .Design.SetMenuTitle("Зомби-классы")
             .EnableSound();
 
-        void AddZClassOption(IZClassConfig config)
-        {
-            var button = new ButtonMenuOption($"{config.DisplayName} {config.Description}");
-
-            button.Click += (_, args) =>
-            {
-                _playersZClass[@args.Player.PlayerID] = config;
-                _core.MenusAPI.CloseMenuForPlayer(@args.Player, _menu);
-                _core.PlayerManager.SendCenterAsync($"{config.DisplayName} успешно выбран!");
-                return ValueTask.CompletedTask;
-            };
-            builder.AddOption(button);
-        }
-
-        AddZClassOption(_config.Cleric);
-        AddZClassOption(_config.Assassin);
-        AddZClassOption(_config.Heavy);
-        AddZClassOption(_config.Hunter);
-        AddZClassOption(_config.Shaman);
+        AddZClassOption<ZCleric>(builder);
+        AddZClassOption<ZAssassin>(builder);
+        AddZClassOption<ZHeavy>(builder);
+        AddZClassOption<ZHunter>(builder);
+        AddZClassOption<ZShaman>(builder);
 
         return builder.Build();
+    }
+    
+    private void AddZClassOption<T>(IMenuBuilderAPI builder) where T : IZombieClass
+    {
+        var zClass = DependencyManager.GetService<T>();
+        var button = new ButtonMenuOption($"{zClass.DisplayName} {zClass.Description}");
+
+        button.Click += (_, args) =>
+        {
+            var playerId = @args.Player.PlayerID;
+            _playersZClass[playerId] = zClass;
+            
+            core.MenusAPI.CloseMenuForPlayer(@args.Player, _menu);
+            
+            core.PlayerManager.SendCenterAsync($"{zClass.DisplayName} успешно выбран!");
+            
+            return ValueTask.CompletedTask;
+        };
+        builder.AddOption(button);
     }
 
     private HookResult PlayerChatEvent(EventPlayerChat @event)
     {
         if (@event.Text == "!class")
         {
-            _core.MenusAPI.OpenMenuForPlayer(@event.UserIdPlayer, _menu);
+            core.MenusAPI.OpenMenuForPlayer(@event.UserIdPlayer, _menu);
         }
 
         return HookResult.Continue;
